@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -37,14 +40,10 @@ public class BlankFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
-//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-//                "Linux", "OS/2" };
+        String[] values = new String[] { "http://i.imgur.com/DvpvklR.png",
+                "http://i.imgur.com/DvpvklR.png", "http://i.imgur.com/DvpvklR.png" };
         
-        MovieGridAdapter adapter = new MovieGridAdapter(getActivity(), new List<String>() {
-        });
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, values);
+        MovieGridAdapter adapter = new MovieGridAdapter(getActivity(), values);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
         grid.setAdapter(adapter);
         return rootView;
