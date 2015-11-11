@@ -29,7 +29,10 @@ public class MovieGridAdapter extends ArrayAdapter<String> {
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item, parent, false);
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.movie_image);
-        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w780//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg").into(imageView);
+        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w780//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+                .placeholder(R.drawable.honeycomb)
+                .error(R.drawable.honeycomb)
+                .into(imageView);
         return imageView;
     }
 }

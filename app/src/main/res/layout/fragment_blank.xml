@@ -5,10 +5,12 @@
     tools:context="com.example.android.myappportfolio.popularmovies.BlankFragment">
 
     <GridView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:numColumns="auto_fit"
         android:id="@+id/gridView"
-        android:layout_gravity="center" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
+        android:stretchMode="columnWidth"
+        android:numColumns="2" />
 
 </RelativeLayout>
