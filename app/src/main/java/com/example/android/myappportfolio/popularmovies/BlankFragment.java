@@ -1,20 +1,12 @@
 package com.example.android.myappportfolio.popularmovies;
 
-import android.app.Activity;
-import android.app.ListFragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 
 public class BlankFragment extends Fragment {
@@ -38,6 +30,9 @@ public class BlankFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        FetchMovies helper = new FetchMovies();
+        new FetchMovies().execute(null, null, null);
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
         String[] values = new String[] { "http://i.imgur.com/DvpvklR.png",
