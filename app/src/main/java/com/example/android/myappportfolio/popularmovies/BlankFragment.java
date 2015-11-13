@@ -30,8 +30,9 @@ public class BlankFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FetchMovies helper = new FetchMovies();
-        new FetchMovies().execute(null, null, null);
+        String moviesJson = new FetchMovies().execute(null, null, null).;
+
+
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);

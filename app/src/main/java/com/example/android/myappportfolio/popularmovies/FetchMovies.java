@@ -13,11 +13,11 @@ import java.net.URL;
 /**
  * Created by rcc on 12.11.15.
  */
-public class FetchMovies extends AsyncTask<Void, Void, Void> {
+public class FetchMovies extends AsyncTask<Void, Void, String> {
     private static final String KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected String doInBackground(Void... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
@@ -63,6 +63,7 @@ public class FetchMovies extends AsyncTask<Void, Void, Void> {
             }
             moviesJson = buffer.toString();
             Log.d("OLOLO", moviesJson);
+            return moviesJson;
 
         } catch (IOException e) {
             Log.e("Ololo", "Error ", e);
