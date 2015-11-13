@@ -13,13 +13,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieGridAdapter extends ArrayAdapter<String> {
+public class MovieGridAdapter<String> extends ArrayAdapter<String> {
 
-    private static final String LOG_TAG = MovieGridAdapter.class.getSimpleName();
+    private final List<String> values;
 
-    private final String[] values;
-
-    public MovieGridAdapter(Activity context, String[] values) {
+    public MovieGridAdapter(Activity context, List<String> values) {
         super(context, 0, values);
         this.values = values;
     }
