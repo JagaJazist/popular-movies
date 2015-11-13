@@ -13,7 +13,7 @@ public class ParseMovieData {
             throws JSONException {
         JSONObject jsonObject = new JSONObject(moviesJsonStr);
         JSONArray results = jsonObject.getJSONArray("results");
-        JSONObject movie = results.getJSONObject(0);
+        JSONObject movie = results.getJSONObject(movieIndex);
         return movie.getString("poster_path");
     }
 

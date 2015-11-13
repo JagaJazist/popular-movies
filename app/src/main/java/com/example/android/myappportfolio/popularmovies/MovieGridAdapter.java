@@ -1,8 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
 import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,24 +11,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieGridAdapter<String> extends ArrayAdapter<String> {
+public class MovieGridAdapter<T extends String> extends ArrayAdapter<String> {
 
-    private final List<String> values;
+    private final String[] values;
 
     public MovieGridAdapter(Activity context, List<String> values) {
         super(context, 0, values);
-        this.values = values;
+        this.values = values.toArray(new String[]{});
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item, parent, false);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item, parent, false);
+        }
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.movie_image);
-        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w780//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+//        if (values.length > 0) {
+        Picasso.with(getContext()).load(values[position])
                 .placeholder(R.drawable.honeycomb)
                 .error(R.drawable.honeycomb)
                 .into(imageView);
+//        }
         return imageView;
     }
 }

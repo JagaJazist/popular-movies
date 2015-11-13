@@ -117,7 +117,9 @@ public class BlankFragment extends Fragment {
                 moviesJson = buffer.toString();
                 Log.d("OLOLO", moviesJson);
 
-                String[] result = new String[] {ParseMovieData.getPosterUrl(moviesJson, 0), ParseMovieData.getPosterUrl(moviesJson, 0)};
+                String[] result = new String[] {
+                        ParseMovieData.getPosterUrl(moviesJson, 0),
+                        ParseMovieData.getPosterUrl(moviesJson, 1)};
 
                 return result;
 
