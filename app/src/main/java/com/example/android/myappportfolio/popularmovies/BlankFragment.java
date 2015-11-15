@@ -51,7 +51,7 @@ public class BlankFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
         String[] values = new String[] {  };
-        List<String> movies = new ArrayList<String>(Arrays.asList(values));
+        List<String> movies = new ArrayList<>(Arrays.asList(values));
         
         movieGridAdapter = new MovieGridAdapter<>(getActivity(), movies);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
@@ -115,11 +115,8 @@ public class BlankFragment extends Fragment {
                     return null;
                 }
                 moviesJson = buffer.toString();
-                Log.d("OLOLO", moviesJson);
 
-                String[] result = new String[] {
-                        ParseMovieData.getPosterUrl(moviesJson, 0),
-                        ParseMovieData.getPosterUrl(moviesJson, 1)};
+                String[] result = ParseMovieData.getPackOfPosterUrls(moviesJson);
 
                 return result;
 

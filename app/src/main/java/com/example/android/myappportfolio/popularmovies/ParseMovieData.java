@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ParseMovieData {
 
@@ -15,6 +18,15 @@ public class ParseMovieData {
         JSONArray results = jsonObject.getJSONArray("results");
         JSONObject movie = results.getJSONObject(movieIndex);
         return movie.getString("poster_path");
+    }
+
+    public static String[] getPackOfPosterUrls(String moviesJsonStr) {
+        List<String> moviesList = new ArrayList();
+        for (int i = 0; i < 20; i++) {
+            moviesList.add(getPosterUrl(moviesJsonStr, i));
+        }
+        String[] result = moviesList.toArray(new String[moviesList.size()]);
+        return result;
     }
 
     public static String getPosterUrl(String moviesJsonStr, int movieIndex) {
@@ -27,10 +39,7 @@ public class ParseMovieData {
         catch (JSONException e) {
             Log.e("Ololo", "Couldn't parse JSON: " + e.getMessage());
         }
-
         url = "http://image.tmdb.org/t/p/w500/" + posterFileName;
-
-        Log.d("OLOLO", url);
 
         return url;
     }
