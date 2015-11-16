@@ -39,10 +39,7 @@ public class MoviesGridFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String[] moviesJson = new String[]{};
         new FetchMovies().execute();
-
-
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
@@ -55,7 +52,7 @@ public class MoviesGridFragment extends Fragment {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, position);
                 startActivity(intent);
             }
         });
