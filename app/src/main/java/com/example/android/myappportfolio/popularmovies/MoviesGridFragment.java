@@ -1,5 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.io.BufferedReader;
@@ -20,17 +22,11 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class BlankFragment extends Fragment {
+public class MoviesGridFragment extends Fragment {
 
     private MovieGridAdapter<String> movieGridAdapter;
 
-    // TODO: Rename and change types and number of parameters
-    public static BlankFragment newInstance() {
-        BlankFragment fragment = new BlankFragment();
-        return fragment;
-    }
-
-    public BlankFragment() {
+    public MoviesGridFragment() {
         // Required empty public constructor
     }
 
@@ -49,13 +45,20 @@ public class BlankFragment extends Fragment {
 
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
         String[] values = new String[] {  };
         List<String> movies = new ArrayList<>(Arrays.asList(values));
         
         movieGridAdapter = new MovieGridAdapter<>(getActivity(), movies);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
         grid.setAdapter(movieGridAdapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                startActivity(intent);
+            }
+        });
         return rootView;
     }
 

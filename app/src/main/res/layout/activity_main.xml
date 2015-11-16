@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
 
    <fragment
-       android:name="com.example.android.myappportfolio.popularmovies.BlankFragment"
+       android:name="com.example.android.myappportfolio.popularmovies.MoviesGridFragment"
        android:id="@+id/blank_fragment"
        android:layout_width="fill_parent"
        android:layout_height="fill_parent">
