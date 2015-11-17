@@ -15,36 +15,40 @@ import java.util.List;
 public class ParseMovieData {
     private static final String LOG_TAG = ParseMovieData.class.getSimpleName();
 
-    public static String getUrlForMoviePosterFromJson(String moviesJsonStr, int movieIndex)
-            throws JSONException {
-        JSONObject jsonObject = new JSONObject(moviesJsonStr);
-        JSONArray results = jsonObject.getJSONArray("results");
-        JSONObject movie = results.getJSONObject(movieIndex);
-        return movie.getString("poster_path");
-    }
-
-    public static String[] getPackOfPosterUrls(String moviesJsonStr) {
-        List<String> moviesList = new ArrayList();
-        for (int i = 0; i < 20; i++) {
-            moviesList.add(getPosterUrl(moviesJsonStr, i));
+    public static Movie[] getMoviesFromJson(String moviesJson) {
+        int moviesNumInJson = 20;
+        List<Movie> moviesList = new ArrayList();
+        for (int i = 0; i < moviesNumInJson; i++) {
+            try {
+                moviesList.add(getUrlForMoviePosterFromJson(moviesJson, i));
+            }
+            catch (JSONException e) {
+                Log.d(LOG_TAG, "Couldn't parse JSON: " + e.getMessage());
+            }
         }
-        String[] result = moviesList.toArray(new String[moviesList.size()]);
+        Movie[] result = moviesList.toArray(new Movie[moviesList.size()]);
         return result;
     }
 
-    public static String getPosterUrl(String moviesJsonStr, int movieIndex) {
-        String posterFileName = "";
-        String url = "";
+//    private JSONObject getMovieJSONObject(String moviesJson, int movieIndex)
+//            throws JSONException {
+//        JSONObject jsonObject = new JSONObject(moviesJson);
+//        JSONArray results = jsonObject.getJSONArray("results");
+//        JSONObject movie = results.getJSONObject(movieIndex);
+//        return movie;
+//    }
 
-        try {
-            posterFileName = getUrlForMoviePosterFromJson(moviesJsonStr, movieIndex);
-        }
-        catch (JSONException e) {
-            Log.e(LOG_TAG, "Couldn't parse JSON: " + e.getMessage());
-        }
-        url = "http://image.tmdb.org/t/p/w500/" + posterFileName;
-
-        return url;
+    private static Movie getUrlForMoviePosterFromJson(String moviesJson, int movieIndex)
+            throws JSONException {
+        JSONObject jsonObject = new JSONObject(moviesJson);
+        JSONArray results = jsonObject.getJSONArray("results");
+        JSONObject movieJSONObject = results.getJSONObject(movieIndex);
+        Movie movie = new Movie(
+                "http://image.tmdb.org/t/p/w500/" + movieJSONObject.getString("poster_path"),
+                movieJSONObject.getString("title"),
+                movieJSONObject.getString("release_date"),
+                movieJSONObject.getString("vote_average"),
+                movieJSONObject.getString("overview"));
+        return movie;
     }
-
 }

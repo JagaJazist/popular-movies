@@ -6,11 +6,11 @@ import android.os.Parcelable;
 public class Movie implements Parcelable {
 
     // Movie details layout contains title, release date, movie poster, vote average, and plot synopsis.
-    String posterUrl;
-    String title;
-    String releaseDate;
-    String voteAverage;
-    String plotSynopsis;
+    public String posterUrl;
+    public String title;
+    public String releaseDate;
+    public String voteAverage;
+    public String plotSynopsis;
 
     public Movie (String posterUrl, String title, String releaseDate, String voteAverage, String plotSynopsis) {
         this.posterUrl = posterUrl;
@@ -47,7 +47,7 @@ public class Movie implements Parcelable {
         dest.writeString(plotSynopsis);
     }
 
-    static final Parcelable.Creator<Movie> CREATOR
+    public static final Parcelable.Creator<Movie> CREATOR
             = new Parcelable.Creator<Movie>() {
 
         public Movie createFromParcel(Parcel in) {

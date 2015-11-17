@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.android.myappportfolio.popularmovies.Models.Movie;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,7 @@ import java.util.List;
 
 public class MoviesGridFragment extends Fragment {
 
-    private MovieGridAdapter<String> movieGridAdapter;
+    private MovieGridAdapter<Movie> movieGridAdapter;
 
     public MoviesGridFragment() {
         // Required empty public constructor
@@ -43,8 +45,8 @@ public class MoviesGridFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
-        String[] values = new String[] {  };
-        List<String> movies = new ArrayList<>(Arrays.asList(values));
+        Movie[] values = new Movie[] {  };
+        final List<Movie> movies = new ArrayList<>(Arrays.asList(values));
         
         movieGridAdapter = new MovieGridAdapter<>(getActivity(), movies);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
@@ -52,7 +54,8 @@ public class MoviesGridFragment extends Fragment {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, position);
+                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, movies.get(position));
+                Log.d("ololo", movies.get(position).toString());
                 startActivity(intent);
             }
         });
@@ -65,12 +68,12 @@ public class MoviesGridFragment extends Fragment {
         super.onDetach();
     }
 
-    public class FetchMovies extends AsyncTask<Void, Void, String[]> {
-        private static final String KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
+    public class FetchMovies extends AsyncTask<Void, Void, Movie[]> {
+        private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
 
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected Movie[] doInBackground(Void... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -85,10 +88,10 @@ public class MoviesGridFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
                 // http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=[YOUR API KEY]
                 String baseUrl = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc";
-                String apiKey = "&api_key=" + BuildConfig.MOVIE_DB_MAP_API_KEY;
+                String apiKey = "&api_key=" + API_KEY;
                 URL url = new URL(baseUrl.concat(apiKey));
 
-//                Log.d("ololo", url.toString());
+                Log.d("ololo", url.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -118,7 +121,7 @@ public class MoviesGridFragment extends Fragment {
                 }
                 moviesJson = buffer.toString();
 
-                String[] result = ParseMovieData.getPackOfPosterUrls(moviesJson);
+                Movie[] result = ParseMovieData.getMoviesFromJson(moviesJson);
 
                 return result;
 
@@ -142,11 +145,11 @@ public class MoviesGridFragment extends Fragment {
         }
 
         @Override
-        public void onPostExecute(String[] result) {
+        public void onPostExecute(Movie[] result) {
             super.onPostExecute(result);
             movieGridAdapter.clear();
             if (result != null) {
-                for (String movie : result) {
+                for (Movie movie : result) {
                     movieGridAdapter.add(movie);
                 }
             }

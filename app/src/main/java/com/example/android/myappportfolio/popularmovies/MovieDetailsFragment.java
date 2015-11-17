@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.myappportfolio.popularmovies.Models.Movie;
+
 import org.w3c.dom.Text;
 
 /**
@@ -31,7 +33,9 @@ public class MovieDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
 
         TextView text = (TextView) view.findViewById(R.id.details_text);
-        text.setText(Integer.toString(getActivity().getIntent().getIntExtra(Intent.EXTRA_TEXT, 0)));
+        Movie movie = getActivity().getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
+
+        text.setText(movie.toString());
 
         return view;
     }
