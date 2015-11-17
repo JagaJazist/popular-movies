@@ -88,6 +88,8 @@ public class MoviesGridFragment extends Fragment {
                 String apiKey = "&api_key=" + BuildConfig.MOVIE_DB_MAP_API_KEY;
                 URL url = new URL(baseUrl.concat(apiKey));
 
+//                Log.d("ololo", url.toString());
+
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");

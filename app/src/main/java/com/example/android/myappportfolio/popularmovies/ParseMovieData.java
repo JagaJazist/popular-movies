@@ -2,6 +2,8 @@ package com.example.android.myappportfolio.popularmovies;
 
 import android.util.Log;
 
+import com.example.android.myappportfolio.popularmovies.Models.Movie;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import java.util.List;
 
 
 public class ParseMovieData {
+    private static final String LOG_TAG = ParseMovieData.class.getSimpleName();
 
     public static String getUrlForMoviePosterFromJson(String moviesJsonStr, int movieIndex)
             throws JSONException {
@@ -37,7 +40,7 @@ public class ParseMovieData {
             posterFileName = getUrlForMoviePosterFromJson(moviesJsonStr, movieIndex);
         }
         catch (JSONException e) {
-            Log.e("Ololo", "Couldn't parse JSON: " + e.getMessage());
+            Log.e(LOG_TAG, "Couldn't parse JSON: " + e.getMessage());
         }
         url = "http://image.tmdb.org/t/p/w500/" + posterFileName;
 
