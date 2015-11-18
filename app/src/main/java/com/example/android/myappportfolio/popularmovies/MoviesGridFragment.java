@@ -26,16 +26,30 @@ import java.util.List;
 
 public class MoviesGridFragment extends Fragment {
 
+    private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
+
     private MovieGridAdapter<Movie> movieGridAdapter;
+    private ArrayList<Movie> moviesList;
 
     public MoviesGridFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+            moviesList = new ArrayList<>();
+        }
+        else {
+            moviesList = savedInstanceState.getParcelableArrayList("movies");
+        }
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movies", moviesList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -45,28 +59,23 @@ public class MoviesGridFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
-        Movie[] values = new Movie[] {  };
-        final List<Movie> movies = new ArrayList<>(Arrays.asList(values));
-        
-        movieGridAdapter = new MovieGridAdapter<>(getActivity(), movies);
+//        Movie[] values = new Movie[]{};
+//        final List<Movie> movies = new ArrayList<>(Arrays.asList(values));
+
+        movieGridAdapter = new MovieGridAdapter<>(getActivity(), moviesList);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
         grid.setAdapter(movieGridAdapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, movies.get(position));
-                Log.d("ololo", movies.get(position).toString());
+                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, moviesList.get(position));
+                Log.d(LOG_TAG, moviesList.get(position).toString());
                 startActivity(intent);
             }
         });
         return rootView;
     }
 
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     public class FetchMovies extends AsyncTask<Void, Void, Movie[]> {
         private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
