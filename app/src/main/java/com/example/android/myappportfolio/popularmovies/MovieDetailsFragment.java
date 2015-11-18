@@ -12,9 +12,7 @@ import android.widget.TextView;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by rcc on 16.11.15.
- */
+
 public class MovieDetailsFragment extends Fragment {
 
     public MovieDetailsFragment() {
@@ -44,7 +42,7 @@ public class MovieDetailsFragment extends Fragment {
         releaseDate.setText(movie.releaseDate);
 
         TextView averageVote = (TextView) view.findViewById(R.id.average_vote);
-        averageVote.setText(movie.voteAverage);
+        averageVote.setText(movie.voteAverage + "/10");
 
         TextView summary = (TextView) view.findViewById(R.id.summary);
         summary.setText(movie.plotSynopsis);
