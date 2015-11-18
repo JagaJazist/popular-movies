@@ -3,15 +3,14 @@ package com.example.android.myappportfolio.popularmovies;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
-
-import org.w3c.dom.Text;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by rcc on 16.11.15.
@@ -31,11 +30,24 @@ public class MovieDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
-
-        TextView text = (TextView) view.findViewById(R.id.details_text);
         Movie movie = getActivity().getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
 
-        text.setText(movie.toString());
+        TextView title = (TextView) view.findViewById(R.id.details_title);
+        title.setText(movie.title);
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.movie_image);
+        Picasso.with(getActivity()).load(movie.posterUrl)
+                .error(R.drawable.honeycomb)
+                .into(imageView);
+
+        TextView releaseDate = (TextView) view.findViewById(R.id.release_date);
+        releaseDate.setText(movie.releaseDate);
+
+        TextView averageVote = (TextView) view.findViewById(R.id.average_vote);
+        averageVote.setText(movie.voteAverage);
+
+        TextView summary = (TextView) view.findViewById(R.id.summary);
+        summary.setText(movie.plotSynopsis);
 
         return view;
     }
