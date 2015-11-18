@@ -20,7 +20,7 @@ public class ParseMovieData {
         List<Movie> moviesList = new ArrayList();
         for (int i = 0; i < moviesNumInJson; i++) {
             try {
-                moviesList.add(getUrlForMoviePosterFromJson(moviesJson, i));
+                moviesList.add(getMovieFromJson(moviesJson, i));
             }
             catch (JSONException e) {
                 Log.d(LOG_TAG, "Couldn't parse JSON: " + e.getMessage());
@@ -30,15 +30,8 @@ public class ParseMovieData {
         return result;
     }
 
-//    private JSONObject getMovieJSONObject(String moviesJson, int movieIndex)
-//            throws JSONException {
-//        JSONObject jsonObject = new JSONObject(moviesJson);
-//        JSONArray results = jsonObject.getJSONArray("results");
-//        JSONObject movie = results.getJSONObject(movieIndex);
-//        return movie;
-//    }
 
-    private static Movie getUrlForMoviePosterFromJson(String moviesJson, int movieIndex)
+    private static Movie getMovieFromJson(String moviesJson, int movieIndex)
             throws JSONException {
         JSONObject jsonObject = new JSONObject(moviesJson);
         JSONArray results = jsonObject.getJSONArray("results");
