@@ -1,11 +1,15 @@
 package com.example.android.myappportfolio.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,12 +36,12 @@ public class MoviesGridFragment extends Fragment {
     private ArrayList<Movie> moviesList;
 
     public MoviesGridFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             moviesList = new ArrayList<>();
         }
@@ -53,14 +57,33 @@ public class MoviesGridFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        getActivity().onCreateOptionsMenu(menu);
+        inflater.inflate(R.menu.menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.popular:
+                new FetchMovies().execute(MoviesFeedType.POPULAR);
+                return true;
+            case R.id.rating:
+                new FetchMovies().execute(MoviesFeedType.RATING);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         new FetchMovies().execute();
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
-//        Movie[] values = new Movie[]{};
-//        final List<Movie> movies = new ArrayList<>(Arrays.asList(values));
 
         movieGridAdapter = new MovieGridAdapter<>(getActivity(), moviesList);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
@@ -77,32 +100,49 @@ public class MoviesGridFragment extends Fragment {
     }
 
 
-    public class FetchMovies extends AsyncTask<Void, Void, Movie[]> {
+    public class FetchMovies extends AsyncTask<MoviesFeedType, Void, Movie[]> {
         private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
+        private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
 
         @Override
-        protected Movie[] doInBackground(Void... params) {
+        protected Movie[] doInBackground(MoviesFeedType... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
             // Will contain the raw JSON response as a string.
-            String moviesJson = null;
+            String moviesJson;
+            String sortingParameter = "popularity.desc";
+
+            if (params.length > 0) {
+                switch (params[0]) {
+                    case POPULAR:
+                        sortingParameter = "popularity.desc";
+                        break;
+                    case RATING:
+                        sortingParameter = "vote_average.desc";
+                        break;
+                }
+            }
+
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("http")
+                    .authority("api.themoviedb.org")
+                    .appendPath("3")
+                    .appendPath("discover")
+                    .appendPath("movie")
+                    .appendQueryParameter("sort_by", sortingParameter)
+                    .appendQueryParameter("api_key", API_KEY)
+                    .fragment("section-name");
+            String uri = builder.build().toString();
 
             try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-                // http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=[YOUR API KEY]
-                String baseUrl = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc";
-                String apiKey = "&api_key=" + API_KEY;
-                URL url = new URL(baseUrl.concat(apiKey));
+                URL url = new URL(uri);
 
-                Log.d("ololo", url.toString());
+                Log.d(LOG_TAG, url.toString());
 
-                // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -118,9 +158,6 @@ public class MoviesGridFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
                     buffer.append(line + "\n");
                 }
 
@@ -135,9 +172,7 @@ public class MoviesGridFragment extends Fragment {
                 return result;
 
             } catch (IOException e) {
-                Log.e("Ololo", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
+                Log.e(LOG_TAG, "Error ", e);
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -147,7 +182,7 @@ public class MoviesGridFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e("Ololo", "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
             }
