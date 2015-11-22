@@ -65,6 +65,7 @@
                             android:textStyle="italic"
                             android:layout_gravity="center"
                             android:layout_margin="16dp"
+                            android:paddingRight="3dp"
                             android:textColor="@color/black"/>
 
                     </LinearLayout>

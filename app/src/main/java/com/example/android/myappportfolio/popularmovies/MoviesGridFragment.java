@@ -87,7 +87,6 @@ public class MoviesGridFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, moviesList.get(position));
-                Log.d(LOG_TAG, moviesList.get(position).toString());
                 startActivity(intent);
             }
         });
@@ -135,8 +134,6 @@ public class MoviesGridFragment extends Fragment {
 
             try {
                 URL url = new URL(uri);
-
-                Log.d(LOG_TAG, url.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");

@@ -8,6 +8,5 @@
        android:name="com.example.android.myappportfolio.popularmovies.MoviesGridFragment"
        android:id="@+id/blank_fragment"
        android:layout_width="fill_parent"
-       android:layout_height="fill_parent">
-   </fragment>
+       android:layout_height="fill_parent"/>
 </RelativeLayout>
