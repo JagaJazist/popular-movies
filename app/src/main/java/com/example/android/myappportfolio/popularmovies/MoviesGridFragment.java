@@ -24,8 +24,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MoviesGridFragment extends Fragment {
@@ -58,19 +56,17 @@ public class MoviesGridFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        getActivity().onCreateOptionsMenu(menu);
         inflater.inflate(R.menu.menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.popular:
-                new FetchMovies().execute(MoviesFeedType.POPULAR);
+                new FetchMovies().execute(MoviesSortingType.POPULAR);
                 return true;
             case R.id.rating:
-                new FetchMovies().execute(MoviesFeedType.RATING);
+                new FetchMovies().execute(MoviesSortingType.RATING);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -82,7 +78,6 @@ public class MoviesGridFragment extends Fragment {
                              Bundle savedInstanceState) {
         new FetchMovies().execute();
 
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
         movieGridAdapter = new MovieGridAdapter<>(getActivity(), moviesList);
@@ -100,13 +95,13 @@ public class MoviesGridFragment extends Fragment {
     }
 
 
-    public class FetchMovies extends AsyncTask<MoviesFeedType, Void, Movie[]> {
+    public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
         private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
 
         @Override
-        protected Movie[] doInBackground(MoviesFeedType... params) {
+        protected Movie[] doInBackground(MoviesSortingType... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;

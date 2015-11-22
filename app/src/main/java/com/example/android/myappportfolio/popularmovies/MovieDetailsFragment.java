@@ -1,6 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
-import android.app.Fragment;
+ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso;
 public class MovieDetailsFragment extends Fragment {
 
     public MovieDetailsFragment() {
-        // Required empty public constructor
     }
 
     @Override

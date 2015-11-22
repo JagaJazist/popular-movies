@@ -1,6 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
-public enum MoviesFeedType {
+public enum MoviesSortingType {
     POPULAR,
     RATING
 }
