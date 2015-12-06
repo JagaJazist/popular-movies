@@ -37,6 +37,7 @@ public class ParseMovieData {
         JSONArray results = jsonObject.getJSONArray("results");
         JSONObject movieJSONObject = results.getJSONObject(movieIndex);
         Movie movie = new Movie(
+                movieJSONObject.getString("id"),
                 "http://image.tmdb.org/t/p/w342/" + movieJSONObject.getString("poster_path"),
                 movieJSONObject.getString("title"),
                 movieJSONObject.getString("release_date"),
