@@ -2,5 +2,6 @@
     <string name="app_name">Popular Movies</string>
     <string name="popular">Most popular</string>
     <string name="rating">Highest rating</string>
+    <string name="content_authority">com.example.android.myappportfolio.popularmovies</string>
 
 </resources>

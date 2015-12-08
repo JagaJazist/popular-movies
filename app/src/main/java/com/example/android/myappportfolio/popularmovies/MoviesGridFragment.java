@@ -1,8 +1,12 @@
 package com.example.android.myappportfolio.popularmovies;
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,19 +16,42 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
+import com.example.android.myappportfolio.popularmovies.Data.MoviesLoader;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 
 import java.util.ArrayList;
 
 
-public class MoviesGridFragment extends Fragment {
+public class MoviesGridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
 
     MovieGridAdapter<Movie> movieGridAdapter;
     private ArrayList<Movie> moviesList;
+    private static final int CURSOR_LOADER_ID = 0;
 
     public MoviesGridFragment() {
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Cursor c =
+                getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                        new String[]{MovieContract.MovieEntry._ID},
+                        null,
+                        null,
+                        null);
+        if (c.getCount() == 0){
+            fetchMovies();
+        }
+        // initialize loader
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    private void fetchMovies() {
+
     }
 
     @Override
@@ -85,4 +112,25 @@ public class MoviesGridFragment extends Fragment {
     }
 
 
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        // Создаем новый CursorLoader с нужными параметрами
+        Loader<String> mLoader = null;
+        // условие можно убрать, если вы используете только один загрузчик
+        if (id == LOADER_ID) {
+            mLoader = new MoviesLoader(this, args);
+            Log.d(TAG, "onCreateLoader");
+        }
+        return mLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
 }
