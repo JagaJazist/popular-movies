@@ -17,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-import com.example.android.myappportfolio.popularmovies.Data.MoviesLoader;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 
 import java.util.ArrayList;
@@ -27,8 +26,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
 
-    MovieGridAdapter<Movie> movieGridAdapter;
-    private ArrayList<Movie> moviesList;
+    MovieGridAdapter movieGridAdapter;
     private static final int CURSOR_LOADER_ID = 0;
 
     public MoviesGridFragment() {
@@ -98,7 +96,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
-        movieGridAdapter = new MovieGridAdapter<>(getActivity(), moviesList);
+        movieGridAdapter = new MovieGridAdapter(getActivity(), moviesList);
         GridView grid = (GridView) rootView.findViewById(R.id.gridView);
         grid.setAdapter(movieGridAdapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {

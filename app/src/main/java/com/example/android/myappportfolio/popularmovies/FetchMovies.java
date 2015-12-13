@@ -1,9 +1,12 @@
 package com.example.android.myappportfolio.popularmovies;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 
 import java.io.BufferedReader;
@@ -16,11 +19,11 @@ import java.net.URL;
 
 public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
     private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
-    private MoviesGridFragment moviesGridFragment;
     private final String LOG_TAG = FetchMovies.class.getSimpleName();
+    private final Context context;
 
-    public FetchMovies(MoviesGridFragment moviesGridFragment) {
-        this.moviesGridFragment = moviesGridFragment;
+    public FetchMovies(Context context) {
+        this.context = context;
     }
 
 
@@ -108,11 +111,18 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
     @Override
     public void onPostExecute(Movie[] result) {
         super.onPostExecute(result);
-        moviesGridFragment.movieGridAdapter.clear();
         if (result != null) {
+            ContentValues[] cvArray = new ContentValues[result.length];
             for (Movie movie : result) {
-                moviesGridFragment.movieGridAdapter.add(movie);
+                ContentValues cv = new ContentValues();
+                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.movie_id);
+                cv.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.title);
+                cv.put(MovieContract.MovieEntry.COLUMN_POSTER, movie.posterUrl);
+                cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.releaseDate);
+                cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.voteAverage);
+                cv.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.plotSynopsis);
             }
+            context.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
         }
     }
 }
