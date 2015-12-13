@@ -1,40 +1,48 @@
 package com.example.android.myappportfolio.popularmovies;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
+import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieGridAdapter<T extends Movie> extends ArrayAdapter<Movie> {
+public class MovieGridAdapter extends CursorAdapter {
 
-    private final List<Movie> values;
+    private static final String LOG_TAG = MovieGridAdapter.class.getSimpleName();
+    private Context mContext;
+    private static int sLoaderID;
 
-    public MovieGridAdapter(Activity context, List<Movie> values) {
-        super(context, 0, values);
-        this.values = values;
+    public MovieGridAdapter(Context context, Cursor cursor, int flags, int loaderID) {
+        super(context, cursor, flags);
+        mContext = context;
+        sLoaderID = loaderID;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item, parent, false);
-        }
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.movie_image);
-        if (values.size() > 0) {
-            Movie movie = values.get(position);
-            String posterUrl = movie.posterUrl;
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
+        view.setTag(view.findViewById(R.id.movie_image));
 
-            Picasso.with(getContext()).load(posterUrl)
-                    .error(R.drawable.honeycomb)
-                    .into(imageView);
-        }
-        return imageView;
+        return view;
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        int index = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER);
+        final String posterURL = cursor.getString(index);
+        Picasso.with(mContext).load(posterURL)
+                .error(R.drawable.honeycomb)
+                .into((ImageView)view);
     }
 }
