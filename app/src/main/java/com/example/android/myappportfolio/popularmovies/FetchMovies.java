@@ -111,16 +111,18 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
     @Override
     public void onPostExecute(Movie[] result) {
         super.onPostExecute(result);
+        Log.d("OLOLO", String.valueOf(result.length));
         if (result != null) {
             ContentValues[] cvArray = new ContentValues[result.length];
-            for (Movie movie : result) {
+            for (int i = 0; i < result.length; i++) {
                 ContentValues cv = new ContentValues();
-                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.movie_id);
-                cv.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.title);
-                cv.put(MovieContract.MovieEntry.COLUMN_POSTER, movie.posterUrl);
-                cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.releaseDate);
-                cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.voteAverage);
-                cv.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.plotSynopsis);
+                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, result[i].movie_id);
+                cv.put(MovieContract.MovieEntry.COLUMN_TITLE, result[i].title);
+                cv.put(MovieContract.MovieEntry.COLUMN_POSTER, result[i].posterUrl);
+                cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, result[i].releaseDate);
+                cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, result[i].voteAverage);
+                cv.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, result[i].plotSynopsis);
+                cvArray[i] = cv;
             }
             context.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
         }

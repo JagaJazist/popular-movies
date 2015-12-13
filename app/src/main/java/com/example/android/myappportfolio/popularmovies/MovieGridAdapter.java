@@ -20,12 +20,10 @@ public class MovieGridAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = MovieGridAdapter.class.getSimpleName();
     private Context mContext;
-    private static int sLoaderID;
 
-    public MovieGridAdapter(Context context, Cursor cursor, int flags, int loaderID) {
+    public MovieGridAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
         mContext = context;
-        sLoaderID = loaderID;
     }
 
 
