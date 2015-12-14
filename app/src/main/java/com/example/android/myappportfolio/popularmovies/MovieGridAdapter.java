@@ -6,15 +6,11 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-import com.example.android.myappportfolio.popularmovies.Models.Movie;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 public class MovieGridAdapter extends CursorAdapter {
 

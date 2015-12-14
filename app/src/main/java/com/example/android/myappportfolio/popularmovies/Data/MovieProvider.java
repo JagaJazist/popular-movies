@@ -70,6 +70,7 @@ public class MovieProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;
             }
             // Individual flavor based on Id selected
@@ -82,6 +83,7 @@ public class MovieProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;
             }
             default:{

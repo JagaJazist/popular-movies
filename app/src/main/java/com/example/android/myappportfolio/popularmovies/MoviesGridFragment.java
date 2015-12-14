@@ -53,6 +53,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onCreate(Bundle savedInstanceState){
+        getMovies(MoviesSortingType.POPULAR);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -114,24 +115,26 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
-
-        String sortOrder = MovieContract.MovieEntry._ID + " ASC";
+        Log.d("OLOLO", "onCreateLoader");
+//        String sortOrder = MovieContract.MovieEntry._ID + " ASC";
         return new CursorLoader(getActivity(),
                 moviesUri,
                 MOVIE_COLUMNS,
                 null,
                 null,
-                sortOrder);
+                null);
 
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d("OLOLO", "onLoadFinished");
         mMovieGridAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
+        Log.d("OLOLO", "onLoaderReset");
         mMovieGridAdapter.swapCursor(null);
     }
 }
