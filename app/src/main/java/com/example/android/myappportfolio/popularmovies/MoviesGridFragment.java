@@ -65,6 +65,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        getActivity().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null);
         switch (item.getItemId()) {
             case R.id.popular:
                 getMovies(MoviesSortingType.POPULAR);
@@ -128,13 +129,11 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d("OLOLO", "onLoadFinished");
         mMovieGridAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
-        Log.d("OLOLO", "onLoaderReset");
         mMovieGridAdapter.swapCursor(null);
     }
 }
