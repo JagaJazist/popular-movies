@@ -1,14 +1,13 @@
 package com.example.android.myappportfolio.popularmovies;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +18,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-
-import java.util.ArrayList;
 
 
 public class MoviesGridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -116,8 +113,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
-        Log.d("OLOLO", "onCreateLoader");
-//        String sortOrder = MovieContract.MovieEntry._ID + " ASC";
         return new CursorLoader(getActivity(),
                 moviesUri,
                 MOVIE_COLUMNS,
