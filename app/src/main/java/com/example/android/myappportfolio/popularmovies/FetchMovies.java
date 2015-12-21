@@ -111,7 +111,6 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
     @Override
     public void onPostExecute(Movie[] result) {
         super.onPostExecute(result);
-        Log.d("OLOLO", String.valueOf(result.length));
         if (result != null) {
             ContentValues[] cvArray = new ContentValues[result.length];
             for (int i = 0; i < result.length; i++) {

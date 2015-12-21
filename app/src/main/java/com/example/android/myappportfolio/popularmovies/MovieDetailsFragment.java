@@ -7,10 +7,12 @@ package com.example.android.myappportfolio.popularmovies;
  import android.support.v4.app.LoaderManager;
  import android.support.v4.content.CursorLoader;
  import android.support.v4.content.Loader;
+ import android.util.Log;
  import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+ import android.widget.ImageButton;
+ import android.widget.ImageView;
 import android.widget.TextView;
 
  import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
@@ -27,6 +29,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Bind(R.id.release_date) TextView releaseDate;
     @Bind(R.id.average_vote) TextView averageVote;
     @Bind(R.id.summary) TextView summary;
+    @Bind(R.id.favourite) ImageButton favourite;
 
     private static final String LOG_TAG = MovieDetailsFragment.class.getSimpleName();
 
@@ -65,6 +68,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
+        favourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("OLOLO", "Add fav");
+            }
+        });
+
         return view;
     }
 
@@ -72,6 +82,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    public void onAddFavouriteClick(View view) {
+
     }
 
     @Override
@@ -106,6 +120,5 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader loader) {
-
     }
 }

@@ -41,4 +41,13 @@ public class MovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
+
+    public static final class FavouriteMovies implements BaseColumns {
+
+        public static final String FAV_PATH = "favourites";
+
+        // columns
+        public static final String _ID = "_id";
+        public static final String FAVOURITE_MOVIE_ID = "movie_id";
+    }
 }
