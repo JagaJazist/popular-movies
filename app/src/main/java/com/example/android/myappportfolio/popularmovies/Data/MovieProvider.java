@@ -19,6 +19,7 @@ public class MovieProvider extends ContentProvider {
     // Codes for the UriMatcher //////
     private static final int MOVIE = 100;
     private static final int MOVIE_WITH_ID = 200;
+    private static final int FAV_MOVIES = 300;
 
     private static UriMatcher buildUriMatcher(){
         // Build a UriMatcher by adding a specific code to return based on a match
@@ -29,6 +30,7 @@ public class MovieProvider extends ContentProvider {
         // add a code for each type of URI you want
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH, MOVIE);
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH + "/#", MOVIE_WITH_ID);
+        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH, FAV_MOVIES);
 
         return matcher;
     }
@@ -84,6 +86,17 @@ public class MovieProvider extends ContentProvider {
                         null,
                         sortOrder);
                 retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+                return retCursor;}
+            case FAV_MOVIES:{
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.FavouriteMovies.FAV_PATH,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;
             }
             default:{
@@ -104,6 +117,15 @@ public class MovieProvider extends ContentProvider {
                 long _id = db.insert(MovieContract.MovieEntry.MOVIE_PATH, null, values);
                 if (_id > 0) {
                     returnUri = MovieContract.MovieEntry.buildMoviesUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into: " + uri);
+                }
+                break;
+            }
+            case FAV_MOVIES: {
+                long _id = db.insert(MovieContract.FavouriteMovies.FAV_PATH, null, values);
+                if (_id > 0) {
+                    returnUri = MovieContract.FavouriteMovies.buildMoviesUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into: " + uri);
                 }
@@ -138,6 +160,13 @@ public class MovieProvider extends ContentProvider {
                 db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                         MovieContract.MovieEntry.MOVIE_PATH + "'");
 
+                break;
+            case FAV_MOVIES:
+                numDeleted = db.delete(
+                        MovieContract.FavouriteMovies.FAV_PATH, selection, selectionArgs);
+                // reset _ID
+                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                        MovieContract.FavouriteMovies.FAV_PATH + "'");
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

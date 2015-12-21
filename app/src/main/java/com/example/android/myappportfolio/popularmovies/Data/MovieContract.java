@@ -18,7 +18,6 @@ public class MovieContract {
         public static final String MOVIE_PATH = "movie";
 
         // columns
-        public static final String _ID = "_id";
         public static final String COLUMN_MOVIE_ID = "movie_id";
         public static final String COLUMN_POSTER = "poster";
         public static final String COLUMN_TITLE = "title";
@@ -47,7 +46,21 @@ public class MovieContract {
         public static final String FAV_PATH = "favourites";
 
         // columns
-        public static final String _ID = "_id";
-        public static final String FAVOURITE_MOVIE_ID = "movie_id";
+        public static final String FAVOURITE_MOVIE_ID = "fav_movie_id";
+
+        // create content uri
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(FAV_PATH).build();
+        // create cursor of base type directory for multiple entries
+        public static final String CONTENT_DIR_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + FAV_PATH;
+        // create cursor of base type item for single entry
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + FAV_PATH;
+
+        // for building URIs on insertion
+        public static Uri buildMoviesUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
 }

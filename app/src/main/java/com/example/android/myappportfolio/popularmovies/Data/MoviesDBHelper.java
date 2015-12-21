@@ -10,7 +10,7 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
 
     //name & version
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
 
     public MoviesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,7 +37,8 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + " TEXT NOT NULL, "
                 + " FOREIGN KEY (" + MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + ") REFERENCES "
-                +MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "))";
+                + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "),"
+                + "UNIQUE (" + MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + ") ON CONFLICT IGNORE)";
 
         sqLiteDatabase.execSQL(SQL_CREATE_FAVOURITES_TABLE);
     }
@@ -51,6 +52,10 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieEntry.MOVIE_PATH);
         sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                 MovieContract.MovieEntry.MOVIE_PATH + "'");
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.FavouriteMovies.FAV_PATH);
+        sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                MovieContract.FavouriteMovies.FAV_PATH + "'");
 
         // re-create database
         onCreate(sqLiteDatabase);

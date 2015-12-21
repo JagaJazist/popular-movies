@@ -1,5 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
+ import android.content.ContentValues;
  import android.content.Intent;
  import android.database.Cursor;
  import android.os.Bundle;
@@ -34,6 +35,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private static final String LOG_TAG = MovieDetailsFragment.class.getSimpleName();
 
     private static final int CURSOR_LOADER_ID = 0;
+
+    private String CURRENT_MOVIE_ID;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -72,6 +75,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             @Override
             public void onClick(View v) {
                 Log.d("OLOLO", "Add fav");
+                ContentValues values = new ContentValues();
+                values.put(MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID, CURRENT_MOVIE_ID);
+                getContext().getContentResolver().insert(MovieContract.FavouriteMovies.CONTENT_URI, values);
+
             }
         });
 
@@ -82,10 +89,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
-    }
-
-    public void onAddFavouriteClick(View view) {
-
     }
 
     @Override
@@ -108,7 +111,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) { return; }
 
-
+        CURRENT_MOVIE_ID = data.getString(COL_MOVIE_ID);
         title.setText(data.getString(COL_MOVIE_TITLE));
         Picasso.with(getActivity()).load(data.getString(COL_MOVIE_POSTER))
                 .error(R.drawable.honeycomb)
