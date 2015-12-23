@@ -19,7 +19,8 @@ public class MovieProvider extends ContentProvider {
     // Codes for the UriMatcher //////
     private static final int MOVIE = 100;
     private static final int MOVIE_WITH_ID = 200;
-    private static final int FAV_MOVIES = 300;
+    private static final int FAV_MOVIE = 300;
+    private static final int FAV_MOVIES_WITH_ID = 400;
 
     private static UriMatcher buildUriMatcher(){
         // Build a UriMatcher by adding a specific code to return based on a match
@@ -30,7 +31,8 @@ public class MovieProvider extends ContentProvider {
         // add a code for each type of URI you want
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH, MOVIE);
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH + "/#", MOVIE_WITH_ID);
-        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH, FAV_MOVIES);
+        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH, FAV_MOVIE);
+        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH + "/#", FAV_MOVIES_WITH_ID);
 
         return matcher;
     }
@@ -87,12 +89,24 @@ public class MovieProvider extends ContentProvider {
                         sortOrder);
                 retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;}
-            case FAV_MOVIES:{
+            case FAV_MOVIE:{
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.FavouriteMovies.FAV_PATH,
                         projection,
                         selection,
                         selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+                return retCursor;
+            }
+            case FAV_MOVIES_WITH_ID:{
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.FavouriteMovies.FAV_PATH,
+                        projection,
+                        MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + " = ?",
+                        new String[] {String.valueOf(ContentUris.parseId(uri))},
                         null,
                         null,
                         sortOrder);
@@ -122,7 +136,7 @@ public class MovieProvider extends ContentProvider {
                 }
                 break;
             }
-            case FAV_MOVIES: {
+            case FAV_MOVIE: {
                 long _id = db.insert(MovieContract.FavouriteMovies.FAV_PATH, null, values);
                 if (_id > 0) {
                     returnUri = MovieContract.FavouriteMovies.buildMoviesUri(_id);
@@ -161,7 +175,7 @@ public class MovieProvider extends ContentProvider {
                         MovieContract.MovieEntry.MOVIE_PATH + "'");
 
                 break;
-            case FAV_MOVIES:
+            case FAV_MOVIES_WITH_ID:
                 numDeleted = db.delete(
                         MovieContract.FavouriteMovies.FAV_PATH, selection, selectionArgs);
                 // reset _ID

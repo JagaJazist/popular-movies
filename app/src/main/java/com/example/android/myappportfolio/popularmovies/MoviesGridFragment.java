@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,6 +93,8 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
                 if (cursor != null) {
                     Intent intent = new Intent(getActivity(), DetailsActivity.class).
                             setData(MovieContract.MovieEntry.buildMoviesUri(cursor.getLong(COL_ID)));
+                    Log.d("OLOLO1", cursor.getString(COL_MOVIE_ID));
+                            intent.putExtra("mov_id", cursor.getString(COL_MOVIE_ID));
                     startActivity(intent);
                 }
             }
