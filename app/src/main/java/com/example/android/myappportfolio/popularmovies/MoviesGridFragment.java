@@ -27,6 +27,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     private MovieGridAdapter mMovieGridAdapter;
     private static final int CURSOR_LOADER_ID = 0;
+    private static final int FAVS_LOADER_ID = 1;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -71,6 +72,9 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
             case R.id.rating:
                 getMovies(MoviesSortingType.RATING);
                 return true;
+            case R.id.favourites:
+                getMovies(MoviesSortingType.FAVOURITE);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -93,7 +97,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
                 if (cursor != null) {
                     Intent intent = new Intent(getActivity(), DetailsActivity.class).
                             setData(MovieContract.MovieEntry.buildMoviesUri(cursor.getLong(COL_ID)));
-                    Log.d("OLOLO1", cursor.getString(COL_MOVIE_ID));
                             intent.putExtra("mov_id", cursor.getString(COL_MOVIE_ID));
                     startActivity(intent);
                 }
@@ -115,14 +118,25 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
-        return new CursorLoader(getActivity(),
-                moviesUri,
-                MOVIE_COLUMNS,
-                null,
-                null,
-                null);
 
+        switch (id) {
+        case CURSOR_LOADER_ID:
+            Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
+            return new CursorLoader(getActivity(),
+                    moviesUri,
+                    MOVIE_COLUMNS,
+                    null,
+                    null,
+                    null);
+            case FAVS_LOADER_ID:
+                Uri favsUri = MovieContract.FavouriteMovies.CONTENT_URI;
+                return new CursorLoader(getActivity(),
+                        favsUri,
+                        MOVIE_COLUMNS,
+                        null,
+                        null,
+                        null);
+            }
     }
 
     @Override

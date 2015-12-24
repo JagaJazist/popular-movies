@@ -39,7 +39,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private static final int FAVOURITES_LOADER_ID = 1;
 
     private String mCurrentMovieId;
-    private boolean mIsFavourited;
+    private boolean mIsFavourite;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -85,13 +85,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             public void onClick(View v) {
                 ContentValues values = new ContentValues();
                 values.put(MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID, mCurrentMovieId);
-                if (!mIsFavourited) {
+                if (!mIsFavourite) {
                     getContext().getContentResolver().insert(MovieContract.FavouriteMovies.CONTENT_URI, values);
-                    mIsFavourited = true;
+                    mIsFavourite = true;
                     favourite.setImageResource(android.R.drawable.star_big_on);
                 } else {
                     getContext().getContentResolver().delete(MovieContract.FavouriteMovies.buildMoviesUri(Long.parseLong(mCurrentMovieId)), null ,null);
-                    mIsFavourited = false;
+                    mIsFavourite = false;
                     favourite.setImageResource(android.R.drawable.star_big_off);
                 }
             }
@@ -158,10 +158,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             case FAVOURITES_LOADER_ID:
                 if(data != null) {
                     favourite.setImageResource(android.R.drawable.star_big_on);
-                    mIsFavourited = true;
+                    mIsFavourite = true;
                 } else {
                     favourite.setImageResource(android.R.drawable.star_big_off);
-                    mIsFavourited = false;
+                    mIsFavourite = false;
                 }
                 break;
         }

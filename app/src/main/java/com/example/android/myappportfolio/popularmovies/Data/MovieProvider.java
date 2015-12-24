@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -20,7 +21,24 @@ public class MovieProvider extends ContentProvider {
     private static final int MOVIE = 100;
     private static final int MOVIE_WITH_ID = 200;
     private static final int FAV_MOVIE = 300;
-    private static final int FAV_MOVIES_WITH_ID = 400;
+    private static final int FAV_MOVIE_WITH_ID = 400;
+
+    private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
+
+    static{
+        sWeatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
+        sWeatherByLocationSettingQueryBuilder.setTables(
+                WeatherContract.WeatherEntry.TABLE_NAME + " INNER JOIN " +
+                        WeatherContract.LocationEntry.TABLE_NAME +
+                        " ON " + WeatherContract.WeatherEntry.TABLE_NAME +
+                        "." + WeatherContract.WeatherEntry.COLUMN_LOC_KEY +
+                        " = " + WeatherContract.LocationEntry.TABLE_NAME +
+                        "." + WeatherContract.LocationEntry._ID);
+    }
+
 
     private static UriMatcher buildUriMatcher(){
         // Build a UriMatcher by adding a specific code to return based on a match
@@ -32,7 +50,7 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH, MOVIE);
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH + "/#", MOVIE_WITH_ID);
         matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH, FAV_MOVIE);
-        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH + "/#", FAV_MOVIES_WITH_ID);
+        matcher.addURI(authority, MovieContract.FavouriteMovies.FAV_PATH + "/#", FAV_MOVIE_WITH_ID);
 
         return matcher;
     }
@@ -101,7 +119,7 @@ public class MovieProvider extends ContentProvider {
                 retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;
             }
-            case FAV_MOVIES_WITH_ID:{
+            case FAV_MOVIE_WITH_ID:{
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.FavouriteMovies.FAV_PATH,
                         projection,
@@ -175,7 +193,7 @@ public class MovieProvider extends ContentProvider {
                         MovieContract.MovieEntry.MOVIE_PATH + "'");
 
                 break;
-            case FAV_MOVIES_WITH_ID:
+            case FAV_MOVIE_WITH_ID:
                 numDeleted = db.delete(MovieContract.FavouriteMovies.FAV_PATH,
                         MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + " = ?",
                         new String[]{String.valueOf(ContentUris.parseId(uri))});
