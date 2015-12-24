@@ -176,9 +176,9 @@ public class MovieProvider extends ContentProvider {
 
                 break;
             case FAV_MOVIES_WITH_ID:
-                numDeleted = db.delete(
-                        MovieContract.FavouriteMovies.FAV_PATH, selection, selectionArgs);
-                // reset _ID
+                numDeleted = db.delete(MovieContract.FavouriteMovies.FAV_PATH,
+                        MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID + " = ?",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))});
                 db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                         MovieContract.FavouriteMovies.FAV_PATH + "'");
                 break;

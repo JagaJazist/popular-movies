@@ -38,7 +38,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private static final int DETAILS_LOADER_ID = 0;
     private static final int FAVOURITES_LOADER_ID = 1;
 
-    private String CURRENT_MOVIE_ID;
+    private String mCurrentMovieId;
+    private boolean mIsFavourited;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -78,13 +79,21 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
+
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("OLOLO", "Add fav");
                 ContentValues values = new ContentValues();
-                values.put(MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID, CURRENT_MOVIE_ID);
-                getContext().getContentResolver().insert(MovieContract.FavouriteMovies.CONTENT_URI, values);
+                values.put(MovieContract.FavouriteMovies.FAVOURITE_MOVIE_ID, mCurrentMovieId);
+                if (!mIsFavourited) {
+                    getContext().getContentResolver().insert(MovieContract.FavouriteMovies.CONTENT_URI, values);
+                    mIsFavourited = true;
+                    favourite.setImageResource(android.R.drawable.star_big_on);
+                } else {
+                    getContext().getContentResolver().delete(MovieContract.FavouriteMovies.buildMoviesUri(Long.parseLong(mCurrentMovieId)), null ,null);
+                    mIsFavourited = false;
+                    favourite.setImageResource(android.R.drawable.star_big_off);
+                }
             }
         });
 
@@ -105,26 +114,28 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             return null;
         }
 
-        if (id == DETAILS_LOADER_ID) {
-            return new CursorLoader(
-                    getActivity(),
-                    intent.getData(),
-                    MOVIE_COLUMNS,
-                    null,
-                    null,
-                    null);
-        } else {
-            Uri uri = MovieContract.FavouriteMovies.buildMoviesUri(
-                    Long.parseLong(intent.getStringExtra("mov_id")));
-            Log.d("OLOLO", uri.toString());
-            return new CursorLoader(
-                    getActivity(),
-                    uri,
-                    FAVOURITES_COLUMNS,
-                    null,
-                    null,
-                    null
+        switch(id) {
+            case DETAILS_LOADER_ID:
+                return new CursorLoader(
+                        getActivity(),
+                        intent.getData(),
+                        MOVIE_COLUMNS,
+                        null,
+                        null,
+                        null);
+            case FAVOURITES_LOADER_ID:
+                Uri uri = MovieContract.FavouriteMovies.buildMoviesUri(
+                        Long.parseLong(intent.getStringExtra("mov_id")));
+                Log.d("OLOLO", uri.toString());
+                return new CursorLoader(
+                        getActivity(),
+                        uri,
+                        FAVOURITES_COLUMNS,
+                        null,
+                        null,
+                        null
             );
+            default: return null;
         }
     }
 
@@ -135,7 +146,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         int id = loader.getId();
         switch(id) {
             case DETAILS_LOADER_ID:
-                CURRENT_MOVIE_ID = data.getString(COL_MOVIE_ID);
+                mCurrentMovieId = data.getString(COL_MOVIE_ID);
                 title.setText(data.getString(COL_MOVIE_TITLE));
                 Picasso.with(getActivity()).load(data.getString(COL_MOVIE_POSTER))
                         .error(R.drawable.honeycomb)
@@ -143,16 +154,16 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                 releaseDate.setText(data.getString(COL_MOVIE_RELEASE_DATE));
                 averageVote.setText(data.getString(COL_MOVIE_VOTE_AVERAGE) + "/10");
                 summary.setText(data.getString(COL_MOVIE_PLOT_SYNOPSIS));
-                CURRENT_MOVIE_ID = data.getString(COL_MOVIE_ID);
+                mCurrentMovieId = data.getString(COL_MOVIE_ID); break;
             case FAVOURITES_LOADER_ID:
-                Log.d("OLOLOCOUNT", String.valueOf(data.getLong(COL_ID)));
-                data.getLong(8);
-                if(data.getCount() < 1) {
+                if(data != null) {
                     favourite.setImageResource(android.R.drawable.star_big_on);
-                } else
-                {
+                    mIsFavourited = true;
+                } else {
                     favourite.setImageResource(android.R.drawable.star_big_off);
+                    mIsFavourited = false;
                 }
+                break;
         }
     }
 
