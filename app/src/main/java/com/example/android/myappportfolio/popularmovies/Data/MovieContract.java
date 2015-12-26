@@ -24,6 +24,9 @@ public class MovieContract {
         public static final String COLUMN_RELEASE_DATE = "release_date";
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_PLOT_SYNOPSIS = "plot_synopsis";
+        public static final String COLUMN_IS_POPULAR = "is_popular";
+        public static final String COLUMN_IS_RATED = "is_rated";
+        public static final String COLUMN_IS_FAVOURITE = "is_favourite";
 
         // create content uri
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
@@ -34,29 +37,6 @@ public class MovieContract {
         // create cursor of base type item for single entry
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
-
-        // for building URIs on insertion
-        public static Uri buildMoviesUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-    }
-
-    public static final class FavouriteMovies implements BaseColumns {
-
-        public static final String FAV_PATH = "favourites";
-
-        // columns
-        public static final String FAVOURITE_MOVIE_ID = "fav_movie_id";
-
-        // create content uri
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(FAV_PATH).build();
-        // create cursor of base type directory for multiple entries
-        public static final String CONTENT_DIR_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + FAV_PATH;
-        // create cursor of base type item for single entry
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + FAV_PATH;
 
         // for building URIs on insertion
         public static Uri buildMoviesUri(long id) {

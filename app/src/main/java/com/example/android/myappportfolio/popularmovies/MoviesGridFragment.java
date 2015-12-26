@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,8 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     private MovieGridAdapter mMovieGridAdapter;
     private static final int CURSOR_LOADER_ID = 0;
-    private static final int FAVS_LOADER_ID = 1;
+
+    MoviesFolder currentFolder = MoviesFolder.POPULAR;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -52,7 +52,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onCreate(Bundle savedInstanceState){
-        getMovies(MoviesSortingType.POPULAR);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -64,16 +63,20 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        getActivity().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null);
         switch (item.getItemId()) {
             case R.id.popular:
-                getMovies(MoviesSortingType.POPULAR);
+                currentFolder = MoviesFolder.POPULAR;
+                getMovies(currentFolder);
+                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
                 return true;
             case R.id.rating:
-                getMovies(MoviesSortingType.RATING);
+                currentFolder = MoviesFolder.RATING;
+                getMovies(currentFolder);
+                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
                 return true;
             case R.id.favourites:
-                getMovies(MoviesSortingType.FAVOURITE);
+                currentFolder = MoviesFolder.FAVOURITES;
+                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -108,35 +111,38 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        getMovies(MoviesFolder.POPULAR);
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void getMovies(MoviesSortingType sortingType) {
+    private void getMovies(MoviesFolder sortingType) {
         FetchMovies fetchMovies = new FetchMovies(getActivity());
         fetchMovies.execute(sortingType);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        switch (id) {
-        case CURSOR_LOADER_ID:
-            Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
-            return new CursorLoader(getActivity(),
-                    moviesUri,
-                    MOVIE_COLUMNS,
-                    null,
-                    null,
-                    null);
-            case FAVS_LOADER_ID:
-                Uri favsUri = MovieContract.FavouriteMovies.CONTENT_URI;
-                return new CursorLoader(getActivity(),
-                        favsUri,
-                        MOVIE_COLUMNS,
-                        null,
-                        null,
-                        null);
-            }
+        String selection;
+        switch (currentFolder){
+            case POPULAR:
+                selection = MovieContract.MovieEntry.COLUMN_IS_POPULAR + " = 1";
+                break;
+            case RATING:
+                selection = MovieContract.MovieEntry.COLUMN_IS_RATED + " = 1";
+                break;
+            case FAVOURITES:
+                selection = MovieContract.MovieEntry.COLUMN_IS_FAVOURITE + " = 1";
+                break;
+            default:
+                selection = MovieContract.MovieEntry.COLUMN_IS_POPULAR + " = 1";
+        }
+        Uri moviesUri = MovieContract.MovieEntry.CONTENT_URI;
+        return new CursorLoader(getActivity(),
+                moviesUri,
+                MOVIE_COLUMNS,
+                selection,
+                null,
+                null);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
+public class FetchMovies extends AsyncTask<MoviesFolder, Void, Movie[]> {
     private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
     private final String LOG_TAG = FetchMovies.class.getSimpleName();
     private final Context context;
@@ -26,9 +26,11 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
         this.context = context;
     }
 
+    MoviesFolder currentFolder;
+
 
     @Override
-    protected Movie[] doInBackground(MoviesSortingType... params) {
+    protected Movie[] doInBackground(MoviesFolder... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
@@ -41,9 +43,11 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
         if (params.length > 0) {
             switch (params[0]) {
                 case POPULAR:
+                    currentFolder = MoviesFolder.POPULAR;
                     sortingParameter = "popularity.desc";
                     break;
                 case RATING:
+                    currentFolder = MoviesFolder.RATING;
                     sortingParameter = "vote_average.desc";
                     break;
             }
@@ -121,6 +125,14 @@ public class FetchMovies extends AsyncTask<MoviesSortingType, Void, Movie[]> {
                 cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, result[i].releaseDate);
                 cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, result[i].voteAverage);
                 cv.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, result[i].plotSynopsis);
+                switch (currentFolder){
+                    case POPULAR:
+                        cv.put(MovieContract.MovieEntry.COLUMN_IS_POPULAR, 1);
+                        break;
+                    case RATING:
+                        cv.put(MovieContract.MovieEntry.COLUMN_IS_RATED, 1);
+                        break;
+                }
                 cvArray[i] = cv;
             }
             context.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);

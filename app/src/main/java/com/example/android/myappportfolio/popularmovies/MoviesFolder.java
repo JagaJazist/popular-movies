@@ -1,6 +1,7 @@
 package com.example.android.myappportfolio.popularmovies;
 
-public enum MoviesSortingType {
+public enum MoviesFolder {
     POPULAR,
-    RATING
+    RATING,
+    FAVOURITES
 }
