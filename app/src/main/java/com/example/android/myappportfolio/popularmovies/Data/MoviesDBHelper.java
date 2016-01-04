@@ -10,7 +10,7 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
 
     //name & version
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public MoviesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -33,7 +33,19 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_IS_FAVOURITE + " INTEGER," +
                 "UNIQUE (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT IGNORE)";
 
+        final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " +
+                MovieContract.ReviewEntry.REVIEW_PATH + "(" + MovieContract.ReviewEntry._ID +
+                " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MovieContract.ReviewEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, "
+                + MovieContract.ReviewEntry.COLUMN_REVIEW_ID + " TEXT NOT NULL, "
+                + MovieContract.ReviewEntry.COLUMN_AUTHOR + " TEXT NOT NULL, "
+                + MovieContract.ReviewEntry.COLUMN_CONTENT + " TEXT NOT NULL, "
+                + MovieContract.ReviewEntry.COLUMN_URL + " TEXT NOT NULL, "
+                + " FOREIGN KEY (" + MovieContract.ReviewEntry.COLUMN_MOVIE_ID + ") REFERENCES "
+                + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "))";
+
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
     }
 
     // Upgrade database when version is changed.
@@ -43,8 +55,11 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 newVersion + ". OLD DATA WILL BE DESTROYED");
         // Drop the table
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieEntry.MOVIE_PATH);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.ReviewEntry.REVIEW_PATH);
         sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                 MovieContract.MovieEntry.MOVIE_PATH + "'");
+        sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                MovieContract.ReviewEntry.REVIEW_PATH + "'");
 
         // re-create database
         onCreate(sqLiteDatabase);

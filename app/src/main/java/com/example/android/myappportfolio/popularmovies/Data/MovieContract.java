@@ -28,6 +28,11 @@ public class MovieContract {
         public static final String COLUMN_IS_RATED = "is_rated";
         public static final String COLUMN_IS_FAVOURITE = "is_favourite";
 
+        public static final String COLUMN_REVIEW_ID = "is_favourite";
+        public static final String COLUMN_AUTHOR = "is_favourite";
+        public static final String COLUMN_CONTENT = "is_favourite";
+        public static final String COLUMN_URL = "is_favourite";
+
         // create content uri
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(MOVIE_PATH).build();
@@ -40,6 +45,33 @@ public class MovieContract {
 
         // for building URIs on insertion
         public static Uri buildMoviesUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class ReviewEntry implements BaseColumns {
+
+        public static final String REVIEW_PATH = "review";
+
+        // columns
+        public static final String COLUMN_MOVIE_ID = "movie_id";
+        public static final String COLUMN_REVIEW_ID = "review_id";
+        public static final String COLUMN_AUTHOR = "author";
+        public static final String COLUMN_CONTENT = "content";
+        public static final String COLUMN_URL = "url";
+
+        // create content uri
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(REVIEW_PATH).build();
+        // create cursor of base type directory for multiple entries
+        public static final String CONTENT_DIR_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + REVIEW_PATH;
+        // create cursor of base type item for single entry
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + REVIEW_PATH;
+
+        // for building URIs on insertion
+        public static Uri buildReviewsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }

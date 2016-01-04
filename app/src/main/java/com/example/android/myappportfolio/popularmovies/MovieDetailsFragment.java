@@ -18,7 +18,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
  import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-import com.squareup.picasso.Picasso;
+ import com.squareup.picasso.NetworkPolicy;
+ import com.squareup.picasso.Picasso;
 
  import butterknife.Bind;
  import butterknife.ButterKnife;
@@ -40,6 +41,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private Uri mCurrentUri;
     private int mIsFavourite;
+    private String mCurrentMovieId;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -100,9 +102,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(DETAILS_LOADER_ID, null, this);
 //        getLoaderManager().initLoader(FAVOURITES_LOADER_ID, null, this);
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -145,8 +147,14 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         int id = loader.getId();
         switch(id) {
             case DETAILS_LOADER_ID:
+                mCurrentMovieId = data.getString(COL_MOVIE_ID);
+
+                FetchReviews fetchReviews = new FetchReviews(getActivity());
+                fetchReviews.execute(mCurrentMovieId);
+
                 title.setText(data.getString(COL_MOVIE_TITLE));
                 Picasso.with(getActivity()).load(data.getString(COL_MOVIE_POSTER))
+                        .networkPolicy(NetworkPolicy.OFFLINE)
                         .error(R.drawable.honeycomb)
                         .into(imageView);
                 releaseDate.setText(data.getString(COL_MOVIE_RELEASE_DATE));

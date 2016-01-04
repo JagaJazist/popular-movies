@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
+import com.example.android.myappportfolio.popularmovies.Models.Review;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,52 +17,41 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+public class FetchReviews extends AsyncTask<String, Void, Review[]> {
 
-public class FetchMovies extends AsyncTask<MoviesFolder, Void, Movie[]> {
     private static final String API_KEY = BuildConfig.MOVIE_DB_MAP_API_KEY;
-    private final String LOG_TAG = FetchMovies.class.getSimpleName();
+    private final String LOG_TAG = FetchReviews.class.getSimpleName();
     private final Context context;
 
-    public FetchMovies(Context context) {
+    public FetchReviews(Context context) {
         this.context = context;
     }
 
-    private MoviesFolder currentFolder;
-
-
     @Override
-    protected Movie[] doInBackground(MoviesFolder... params) {
+    protected Review[] doInBackground(String... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String moviesJson;
-        String sortingParameter = "popularity.desc";
+        String reviewsJson;
+        String movieId;
 
         if (params.length > 0) {
-            switch (params[0]) {
-                case POPULAR:
-                    currentFolder = MoviesFolder.POPULAR;
-                    sortingParameter = "popularity.desc";
-                    break;
-                case RATING:
-                    currentFolder = MoviesFolder.RATING;
-                    sortingParameter = "vote_average.desc";
-                    break;
-            }
+            movieId = params[0];
+        } else {
+            throw new IllegalStateException("Movie not specified");
         }
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
                 .authority("api.themoviedb.org")
                 .appendPath("3")
-                .appendPath("discover")
                 .appendPath("movie")
-                .appendQueryParameter("sort_by", sortingParameter)
-                .appendQueryParameter("api_key", API_KEY)
-                .fragment("section-name");
+                .appendPath(movieId)
+                .appendPath("reviews")
+                .appendQueryParameter("api_key", API_KEY);
         String uri = builder.build().toString();
 
         try {
@@ -91,9 +81,9 @@ public class FetchMovies extends AsyncTask<MoviesFolder, Void, Movie[]> {
                 // Stream was empty.  No point in parsing.
                 return null;
             }
-            moviesJson = buffer.toString();
+            reviewsJson = buffer.toString();
 
-            Movie[] result = ParseMovieData.getMoviesFromJson(moviesJson);
+            Review[] result = ParseMovieData.getReviewsFromJson(reviewsJson);
 
             return result;
 
@@ -113,31 +103,21 @@ public class FetchMovies extends AsyncTask<MoviesFolder, Void, Movie[]> {
             }
         }
     }
-
     @Override
-    public void onPostExecute(Movie[] result) {
+    public void onPostExecute(Review[] result) {
         super.onPostExecute(result);
         if (result != null) {
             ContentValues[] cvArray = new ContentValues[result.length];
             for (int i = 0; i < result.length; i++) {
                 ContentValues cv = new ContentValues();
-                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, result[i].movie_id);
-                cv.put(MovieContract.MovieEntry.COLUMN_TITLE, result[i].title);
-                cv.put(MovieContract.MovieEntry.COLUMN_POSTER, result[i].posterUrl);
-                cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, result[i].releaseDate);
-                cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, result[i].voteAverage);
-                cv.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, result[i].plotSynopsis);
-                switch (currentFolder){
-                    case POPULAR:
-                        cv.put(MovieContract.MovieEntry.COLUMN_IS_POPULAR, 1);
-                        break;
-                    case RATING:
-                        cv.put(MovieContract.MovieEntry.COLUMN_IS_RATED, 1);
-                        break;
-                }
+                cv.put(MovieContract.ReviewEntry.COLUMN_MOVIE_ID, result[i].movieId);
+                cv.put(MovieContract.ReviewEntry.COLUMN_REVIEW_ID, result[i].reviewId);
+                cv.put(MovieContract.ReviewEntry.COLUMN_AUTHOR, result[i].author);
+                cv.put(MovieContract.ReviewEntry.COLUMN_CONTENT, result[i].content);
+                cv.put(MovieContract.ReviewEntry.COLUMN_URL, result[i].url);
                 cvArray[i] = cv;
             }
-            context.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
+            context.getContentResolver().bulkInsert(MovieContract.ReviewEntry.CONTENT_URI, cvArray);
         }
     }
 }
