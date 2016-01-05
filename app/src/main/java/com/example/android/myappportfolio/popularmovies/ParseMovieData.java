@@ -25,7 +25,7 @@ public class ParseMovieData {
             totalResults = Integer.parseInt(jsonObject.getString("total_results"));
 
 
-            for (int i = 0; i < totalResults; i++) {
+            for (int i = 0; (i < totalResults) && (i < 5); i++) {
                 JSONArray results = jsonObject.getJSONArray("results");
                 JSONObject review = results.getJSONObject(i);
                 reviewList.add(new Review(

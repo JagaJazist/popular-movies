@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-import com.example.android.myappportfolio.popularmovies.Models.Movie;
 import com.example.android.myappportfolio.popularmovies.Models.Review;
 
 import java.io.BufferedReader;
