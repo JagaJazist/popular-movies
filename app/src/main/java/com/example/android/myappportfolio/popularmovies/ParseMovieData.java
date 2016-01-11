@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.android.myappportfolio.popularmovies.Models.Movie;
 import com.example.android.myappportfolio.popularmovies.Models.Review;
+import com.example.android.myappportfolio.popularmovies.Models.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +18,31 @@ import java.util.List;
 public class ParseMovieData {
     private static final String LOG_TAG = ParseMovieData.class.getSimpleName();
 
+    public static Video[] getVideosFromJson(String videosJson) {
+        List<Video> videosList = new LinkedList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(videosJson);
+            JSONArray results = jsonObject.getJSONArray("results");
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject videoObject = results.getJSONObject(i);
+                videosList.add(new Video(
+                        videoObject.getString("id"),
+                        jsonObject.getString("id"),
+                        videoObject.getString("iso_639_1"),
+                        videoObject.getString("key"),
+                        videoObject.getString("name"),
+                        videoObject.getString("site"),
+                        videoObject.getString("size"),
+                        videoObject.getString("type")
+                ));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return videosList.toArray(new Video[videosList.size()]);
+    }
+
     public static Review[] getReviewsFromJson(String reviewsJson) {
         List<Review> reviewList = new LinkedList<>();
         int totalResults = 0;
@@ -24,8 +50,12 @@ public class ParseMovieData {
             JSONObject jsonObject = new JSONObject(reviewsJson);
             totalResults = Integer.parseInt(jsonObject.getString("total_results"));
 
+            // showing only first page of reviews
+            if (totalResults > 4) {
+                totalResults = 4;
+            }
 
-            for (int i = 0; (i < totalResults) && (i < 5); i++) {
+            for (int i = 0; i < totalResults; i++) {
                 JSONArray results = jsonObject.getJSONArray("results");
                 JSONObject review = results.getJSONObject(i);
                 reviewList.add(new Review(

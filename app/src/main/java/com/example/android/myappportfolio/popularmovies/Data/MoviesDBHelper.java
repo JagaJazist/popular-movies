@@ -10,7 +10,7 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
 
     //name & version
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 89;
 
     public MoviesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +42,8 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 + MovieContract.ReviewEntry.COLUMN_CONTENT + " TEXT NOT NULL, "
                 + MovieContract.ReviewEntry.COLUMN_URL + " TEXT NOT NULL, "
                 + " FOREIGN KEY (" + MovieContract.ReviewEntry.COLUMN_MOVIE_ID + ") REFERENCES "
-                + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "))";
+                + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ")"
+                + " UNIQUE (" + MovieContract.ReviewEntry.COLUMN_REVIEW_ID + ") ON CONFLICT IGNORE)";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);

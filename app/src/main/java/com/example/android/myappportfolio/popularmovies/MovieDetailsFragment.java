@@ -15,7 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
  import android.widget.ImageButton;
  import android.widget.ImageView;
-import android.widget.TextView;
+ import android.widget.ListView;
+ import android.widget.TextView;
 
  import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
  import com.squareup.picasso.NetworkPolicy;
@@ -33,6 +34,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Bind(R.id.average_vote) TextView averageVote;
     @Bind(R.id.summary) TextView summary;
     @Bind(R.id.favourite) ImageButton favourite;
+    @Bind(R.id.reviews_list) ListView reviewsList;
 
     private static final String LOG_TAG = MovieDetailsFragment.class.getSimpleName();
 
@@ -42,6 +44,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private Uri mCurrentUri;
     private int mIsFavourite;
     private String mCurrentMovieId;
+    private ReviewsListAdapter reviewsListAdapter;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -90,8 +93,12 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        reviewsListAdapter = new ReviewsListAdapter(getActivity(), null, 0);
+
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
+
+        reviewsList.setAdapter(reviewsListAdapter);
 
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,6 +192,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             case REVIEWS_LOADER_ID:
                 String content = data.getString(COL_REVIEW_CONTENT);
                 Log.d("OLOLO CONTENT", content);
+                reviewsListAdapter.swapCursor(data);
                 break;
         }
     }
