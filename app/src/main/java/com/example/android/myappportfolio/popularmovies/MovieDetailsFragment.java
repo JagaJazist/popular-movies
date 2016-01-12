@@ -40,10 +40,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private static final int DETAILS_LOADER_ID = 0;
     private static final int REVIEWS_LOADER_ID = 1;
+    private static final int VIDEOS_LOADER_ID = 2;
 
     private Uri mCurrentUri;
     private int mIsFavourite;
-    private String mCurrentMovieId;
     private ReviewsListAdapter reviewsListAdapter;
 
     private static final String[] MOVIE_COLUMNS = {
@@ -66,6 +66,18 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             MovieContract.ReviewEntry.COLUMN_URL
     };
 
+    private static final String[] VIDEO_COLUMNS = {
+            MovieContract.VideoEntry.VIDEO_PATH + "." + MovieContract.VideoEntry._ID,
+            MovieContract.VideoEntry.COLUMN_MOVIE_ID,
+            MovieContract.VideoEntry.COLUMN_VIDEO_ID,
+            MovieContract.VideoEntry.COLUMN_ISO,
+            MovieContract.VideoEntry.COLUMN_KEY,
+            MovieContract.VideoEntry.COLUMN_NAME,
+            MovieContract.VideoEntry.COLUMN_SITE,
+            MovieContract.VideoEntry.COLUMN_SIZE,
+            MovieContract.VideoEntry.COLUMN_TYPE
+    };
+
     static final int COL_ID = 0;
     static final int COL_MOVIE_ID = 1;
     static final int COL_MOVIE_TITLE = 2;
@@ -80,6 +92,14 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     static final int COL_REVIEW_CONTENT = 3;
     static final int COL_REVIEW_URL = 4;
 
+    static final int COL_VIDEO_MOVIE_ID = 1;
+    static final int COL_VIDEO_ID = 2;
+    static final int COL_ISO = 3;
+    static final int COL_KEY = 4;
+    static final int COL_NAME = 5;
+    static final int COL_SITE = 6;
+    static final int COL_SIZE = 7;
+    static final int COL_TYPE = 8;
 
     public MovieDetailsFragment() {
     }
@@ -119,8 +139,12 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         });
 
         Intent intent = getActivity().getIntent();
+        String movieId = intent.getStringExtra("mov_id");
         FetchReviews fetchReviews = new FetchReviews(getActivity());
-        fetchReviews.execute(intent.getStringExtra("mov_id"));
+        fetchReviews.execute(movieId);
+
+        FetchVideos fetchVideos = new FetchVideos(getActivity());
+        fetchVideos.execute(movieId);
 
         return view;
     }
@@ -130,6 +154,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(DETAILS_LOADER_ID, null, this);
         getLoaderManager().initLoader(REVIEWS_LOADER_ID, null, this);
+        getLoaderManager().initLoader(VIDEOS_LOADER_ID, null, this);
     }
 
     @Override
@@ -150,17 +175,29 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         null,
                         null);
             case REVIEWS_LOADER_ID:
-                Uri uri = MovieContract.ReviewEntry.buildReviewsUri(
+                Uri reviewUri = MovieContract.ReviewEntry.buildReviewsUri(
                         Long.parseLong(intent.getStringExtra("mov_id")));
-                Log.d("OLOLO", uri.toString());
+                Log.d("OLOLO", reviewUri.toString());
                 return new CursorLoader(
                         getActivity(),
-                        uri,
+                        reviewUri,
                         REVIEW_COLUMNS,
                         null,
                         null,
                         null
             );
+            case VIDEOS_LOADER_ID:
+                Uri videoUri = MovieContract.VideoEntry.buildReviewsUri(
+                        Long.parseLong(intent.getStringExtra("mov_id")));
+                Log.d("OLOLO", videoUri.toString());
+                return new CursorLoader(
+                        getActivity(),
+                        videoUri,
+                        VIDEO_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
             default: return null;
         }
     }
@@ -172,7 +209,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         int id = loader.getId();
         switch(id) {
             case DETAILS_LOADER_ID:
-                mCurrentMovieId = data.getString(COL_MOVIE_ID);
 
                 title.setText(data.getString(COL_MOVIE_TITLE));
                 Picasso.with(getActivity()).load(data.getString(COL_MOVIE_POSTER))
@@ -190,9 +226,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                 }
                 break;
             case REVIEWS_LOADER_ID:
-                String content = data.getString(COL_REVIEW_CONTENT);
-                Log.d("OLOLO CONTENT", content);
+                String reviewContent = data.getString(COL_REVIEW_CONTENT);
+                Log.d("OLOLO CONTENT", reviewContent);
                 reviewsListAdapter.swapCursor(data);
+                break;
+            case VIDEOS_LOADER_ID:
+                String videoContent = data.getString(COL_KEY);
+                Log.d("OLOLO CONTENT", videoContent);
                 break;
         }
     }

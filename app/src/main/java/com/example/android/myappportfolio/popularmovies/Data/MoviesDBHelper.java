@@ -10,7 +10,7 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
 
     //name & version
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 89;
+    private static final int DATABASE_VERSION = 899;
 
     public MoviesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,8 +45,25 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ")"
                 + " UNIQUE (" + MovieContract.ReviewEntry.COLUMN_REVIEW_ID + ") ON CONFLICT IGNORE)";
 
+        final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " +
+                MovieContract.VideoEntry.VIDEO_PATH + "(" + MovieContract.VideoEntry._ID +
+                " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MovieContract.VideoEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_VIDEO_ID + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_ISO + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_KEY + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_NAME + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_SITE + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_SIZE + " TEXT NOT NULL, "
+                + MovieContract.VideoEntry.COLUMN_TYPE + " TEXT NOT NULL, "
+                + " FOREIGN KEY (" + MovieContract.VideoEntry.COLUMN_MOVIE_ID + ") REFERENCES "
+                + MovieContract.MovieEntry.MOVIE_PATH + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ")"
+                + " UNIQUE (" + MovieContract.VideoEntry.COLUMN_VIDEO_ID + ") ON CONFLICT IGNORE)";
+
+
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_VIDEOS_TABLE);
     }
 
     // Upgrade database when version is changed.
@@ -61,6 +78,8 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.MOVIE_PATH + "'");
         sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                 MovieContract.ReviewEntry.REVIEW_PATH + "'");
+        sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                MovieContract.VideoEntry.VIDEO_PATH + "'");
 
         // re-create database
         onCreate(sqLiteDatabase);

@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
-import com.example.android.myappportfolio.popularmovies.Models.Review;
 import com.example.android.myappportfolio.popularmovies.Models.Video;
 
 import java.io.BufferedReader;
@@ -110,14 +109,18 @@ public class FetchVideos extends AsyncTask<String, Void, Video[]> {
             ContentValues[] cvArray = new ContentValues[result.length];
             for (int i = 0; i < result.length; i++) {
                 ContentValues cv = new ContentValues();
-                cv.put(MovieContract.ReviewEntry.COLUMN_MOVIE_ID, result[i].movieId);
-                cv.put(MovieContract.ReviewEntry.COLUMN_REVIEW_ID, result[i].reviewId);
-                cv.put(MovieContract.ReviewEntry.COLUMN_AUTHOR, result[i].author);
-                cv.put(MovieContract.ReviewEntry.COLUMN_CONTENT, result[i].content);
-                cv.put(MovieContract.ReviewEntry.COLUMN_URL, result[i].url);
+                cv.put(MovieContract.VideoEntry.COLUMN_MOVIE_ID, result[i].movieId);
+                cv.put(MovieContract.VideoEntry.COLUMN_VIDEO_ID, result[i].videoId);
+                cv.put(MovieContract.VideoEntry.COLUMN_ISO, result[i].iso_639_1);
+                cv.put(MovieContract.VideoEntry.COLUMN_KEY, result[i].key);
+                cv.put(MovieContract.VideoEntry.COLUMN_NAME, result[i].name);
+                cv.put(MovieContract.VideoEntry.COLUMN_SITE, result[i].site);
+                cv.put(MovieContract.VideoEntry.COLUMN_SIZE, result[i].size);
+                cv.put(MovieContract.VideoEntry.COLUMN_TYPE, result[i].type);
+
                 cvArray[i] = cv;
             }
-            context.getContentResolver().bulkInsert(MovieContract.ReviewEntry.CONTENT_URI, cvArray);
+            context.getContentResolver().bulkInsert(MovieContract.VideoEntry.CONTENT_URI, cvArray);
         }
     }
 }

@@ -13,8 +13,8 @@ public class Video {
 
     public Video(String videoId,
                  String movieId,
-                 String key,
                  String iso_639_1,
+                 String key,
                  String name,
                  String site,
                  String size,

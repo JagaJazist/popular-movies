@@ -21,6 +21,8 @@ public class MovieProvider extends ContentProvider {
     private static final int MOVIE_WITH_ID = 200;
     private static final int REVIEWS_FOR_MOVIE = 300;
     private static final int REVIEW = 400;
+    private static final int VIDEOS_FOR_MOVIE = 500;
+    private static final int VIDEO = 600;
 
 
     private static UriMatcher buildUriMatcher(){
@@ -31,9 +33,12 @@ public class MovieProvider extends ContentProvider {
 
         // add a code for each type of URI you want
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH, MOVIE);
-        matcher.addURI(authority, MovieContract.ReviewEntry.REVIEW_PATH + "/#", REVIEWS_FOR_MOVIE);
-        matcher.addURI(authority, MovieContract.ReviewEntry.REVIEW_PATH, REVIEW);
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH + "/#", MOVIE_WITH_ID);
+        matcher.addURI(authority, MovieContract.ReviewEntry.REVIEW_PATH, REVIEW);
+        matcher.addURI(authority, MovieContract.ReviewEntry.REVIEW_PATH + "/#", REVIEWS_FOR_MOVIE);
+        matcher.addURI(authority, MovieContract.VideoEntry.VIDEO_PATH, VIDEO);
+        matcher.addURI(authority, MovieContract.VideoEntry.VIDEO_PATH + "/#", VIDEOS_FOR_MOVIE);
+
         return matcher;
     }
 
@@ -51,14 +56,20 @@ public class MovieProvider extends ContentProvider {
             case MOVIE: {
                 return MovieContract.MovieEntry.CONTENT_DIR_TYPE;
             }
-            case REVIEWS_FOR_MOVIE: {
-                return MovieContract.ReviewEntry.CONTENT_DIR_TYPE;
+            case MOVIE_WITH_ID: {
+                return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
             }
             case REVIEW: {
                 return MovieContract.ReviewEntry.CONTENT_DIR_TYPE;
             }
-            case MOVIE_WITH_ID: {
-                return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
+            case REVIEWS_FOR_MOVIE: {
+                return MovieContract.ReviewEntry.CONTENT_DIR_TYPE;
+            }
+            case VIDEO: {
+                return MovieContract.VideoEntry.CONTENT_DIR_TYPE;
+            }
+            case VIDEOS_FOR_MOVIE: {
+                return MovieContract.VideoEntry.CONTENT_DIR_TYPE;
             }
             default:{
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -95,7 +106,18 @@ public class MovieProvider extends ContentProvider {
                 retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;
             }
-            // Individual flavor based on Id selected
+            case VIDEOS_FOR_MOVIE:{
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.VideoEntry.VIDEO_PATH,
+                        projection,
+                        MovieContract.VideoEntry.COLUMN_MOVIE_ID + " = ?",
+                        new String[] {String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder);
+                retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+                return retCursor;
+            }
             case MOVIE_WITH_ID:{
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.MOVIE_PATH,
@@ -139,6 +161,15 @@ public class MovieProvider extends ContentProvider {
                 }
                 break;
             }
+            case VIDEO: {
+                long _id = db.insert(MovieContract.VideoEntry.VIDEO_PATH, null, values);
+                if (_id > 0) {
+                    returnUri = MovieContract.VideoEntry.buildReviewsUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into: " + uri);
+                }
+                break;
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -167,6 +198,13 @@ public class MovieProvider extends ContentProvider {
                 // reset _ID
                 db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                         MovieContract.ReviewEntry.REVIEW_PATH + "'");
+                break;
+            case VIDEOS_FOR_MOVIE:
+                numDeleted = db.delete(
+                        MovieContract.VideoEntry.VIDEO_PATH, selection, selectionArgs);
+                // reset _ID
+                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                        MovieContract.VideoEntry.VIDEO_PATH + "'");
                 break;
             case MOVIE_WITH_ID:
                 numDeleted = db.delete(MovieContract.MovieEntry.MOVIE_PATH,
@@ -249,6 +287,46 @@ public class MovieProvider extends ContentProvider {
                             Log.w(LOG_TAG, "Attempting to insert " +
                                     value.getAsString(
                                             MovieContract.ReviewEntry.COLUMN_REVIEW_ID)
+                                    + " but value is already in database.");
+                        }
+                        if (_id != -1){
+                            numInserted++;
+                        }
+                    }
+                    if(numInserted > 0){
+                        // If no errors, declare a successful transaction.
+                        // database will not populate if this is not called
+                        db.setTransactionSuccessful();
+                    }
+                } finally {
+                    // all transactions occur at once
+                    db.endTransaction();
+                }
+                if (numInserted > 0){
+                    // if there was successful insertion, notify the content resolver that there
+                    // was a change
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                return numInserted;
+            case VIDEO:
+                // allows for multiple transactions
+                db.beginTransaction();
+
+                // keep track of successful inserts
+                numInserted = 0;
+                try{
+                    for(ContentValues value : values){
+                        if (value == null){
+                            throw new IllegalArgumentException("Cannot have null content values");
+                        }
+                        long _id = -1;
+                        try{
+                            _id = db.insertOrThrow(MovieContract.VideoEntry.VIDEO_PATH,
+                                    null, value);
+                        }catch(SQLiteConstraintException e) {
+                            Log.w(LOG_TAG, "Attempting to insert " +
+                                    value.getAsString(
+                                            MovieContract.VideoEntry.COLUMN_VIDEO_ID)
                                     + " but value is already in database.");
                         }
                         if (_id != -1){
