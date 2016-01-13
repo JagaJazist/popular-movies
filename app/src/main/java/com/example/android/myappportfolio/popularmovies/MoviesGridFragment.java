@@ -111,7 +111,7 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-        getMovies(MoviesFolder.POPULAR);
+        getMovies(currentFolder);
         super.onActivityCreated(savedInstanceState);
     }
 

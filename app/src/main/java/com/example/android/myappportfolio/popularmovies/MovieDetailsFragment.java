@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
  import android.widget.ImageButton;
  import android.widget.ImageView;
+ import android.widget.LinearLayout;
  import android.widget.ListView;
  import android.widget.TextView;
 
@@ -34,7 +35,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Bind(R.id.average_vote) TextView averageVote;
     @Bind(R.id.summary) TextView summary;
     @Bind(R.id.favourite) ImageButton favourite;
-    @Bind(R.id.reviews_list) ListView reviewsList;
 
     private static final String LOG_TAG = MovieDetailsFragment.class.getSimpleName();
 
@@ -44,7 +44,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private Uri mCurrentUri;
     private int mIsFavourite;
-    private ReviewsListAdapter reviewsListAdapter;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -87,10 +86,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     static final int COL_MOVIE_PLOT_SYNOPSIS = 6;
     static final int COL_MOVIE_IS_FAVOURITE = 7;
 
-    static final int COL_REVIEW_ID = 1;
-    static final int COL_REVIEW_AUTHOR = 2;
-    static final int COL_REVIEW_CONTENT = 3;
-    static final int COL_REVIEW_URL = 4;
+    static final int COL_REVIEW_ID = 2;
+    static final int COL_REVIEW_AUTHOR = 3;
+    static final int COL_REVIEW_CONTENT = 4;
+    static final int COL_REVIEW_URL = 5;
 
     static final int COL_VIDEO_MOVIE_ID = 1;
     static final int COL_VIDEO_ID = 2;
@@ -113,12 +112,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        reviewsListAdapter = new ReviewsListAdapter(getActivity(), null, 0);
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
-
-        reviewsList.setAdapter(reviewsListAdapter);
 
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,9 +222,23 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                 }
                 break;
             case REVIEWS_LOADER_ID:
-                String reviewContent = data.getString(COL_REVIEW_CONTENT);
-                Log.d("OLOLO CONTENT", reviewContent);
-                reviewsListAdapter.swapCursor(data);
+
+                LinearLayout reviews = (LinearLayout)getActivity().findViewById(R.id.reviews);
+
+                if (data.moveToFirst()){
+                    while(!data.isAfterLast()){
+                        View child = getLayoutInflater(null).inflate(R.layout.review_list_item, null);
+                        TextView author = (TextView)child.findViewById(R.id.review_author);
+                        author.setText(data.getString(COL_REVIEW_AUTHOR));
+                        TextView content = (TextView)child.findViewById(R.id.review_content);
+                        content.setText(data.getString(COL_REVIEW_CONTENT));
+                        reviews.addView(child);
+
+                        data.moveToNext();
+                    }
+                }
+                data.close();
+
                 break;
             case VIDEOS_LOADER_ID:
                 String videoContent = data.getString(COL_KEY);
