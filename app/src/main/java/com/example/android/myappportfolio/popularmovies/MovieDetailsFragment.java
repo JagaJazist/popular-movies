@@ -44,6 +44,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private Uri mCurrentUri;
     private int mIsFavourite;
+    private String mCurrentMovieId;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -111,7 +112,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Intent intent = getActivity().getIntent();
+        mCurrentMovieId = intent.getStringExtra("mov_id");
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
@@ -134,13 +136,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             }
         });
 
-        Intent intent = getActivity().getIntent();
-        String movieId = intent.getStringExtra("mov_id");
-        FetchReviews fetchReviews = new FetchReviews(getActivity());
-        fetchReviews.execute(movieId);
+        if (mCurrentMovieId != null) {
+            FetchReviews fetchReviews = new FetchReviews(getActivity());
+            fetchReviews.execute(mCurrentMovieId);
 
-        FetchVideos fetchVideos = new FetchVideos(getActivity());
-        fetchVideos.execute(movieId);
+            FetchVideos fetchVideos = new FetchVideos(getActivity());
+            fetchVideos.execute(mCurrentMovieId);
+        }
 
         return view;
     }
@@ -156,9 +158,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getActivity().getIntent();
-        if (intent == null) {
+        if (intent == null || intent.getData() == null) {
             return null;
         }
+
         mCurrentUri = intent.getData();
 
         switch(id) {
