@@ -28,11 +28,6 @@ public class MovieContract {
         public static final String COLUMN_IS_RATED = "is_rated";
         public static final String COLUMN_IS_FAVOURITE = "is_favourite";
 
-        public static final String COLUMN_REVIEW_ID = "is_favourite";
-        public static final String COLUMN_AUTHOR = "is_favourite";
-        public static final String COLUMN_CONTENT = "is_favourite";
-        public static final String COLUMN_URL = "is_favourite";
-
         // create content uri
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(MOVIE_PATH).build();

@@ -1,6 +1,5 @@
 package com.example.android.myappportfolio.popularmovies;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,8 +23,10 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
 
-    private MovieGridAdapter mMovieGridAdapter;
     private static final int CURSOR_LOADER_ID = 0;
+
+    private MovieGridAdapter mMovieGridAdapter;
+    private String mSelectedMovie;
 
     MoviesFolder currentFolder = MoviesFolder.POPULAR;
 
@@ -54,7 +55,10 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        MainActivity activity = (MainActivity) getActivity();
+        mSelectedMovie = activity.mSelectedMovieId;
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -63,20 +67,24 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        MainActivity activity = (MainActivity) getActivity();
         switch (item.getItemId()) {
             case R.id.popular:
                 currentFolder = MoviesFolder.POPULAR;
                 getMovies(currentFolder);
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+                activity.onMovieChanged(null);
                 return true;
             case R.id.rating:
                 currentFolder = MoviesFolder.RATING;
                 getMovies(currentFolder);
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+                activity.onMovieChanged(null);
                 return true;
             case R.id.favourites:
                 currentFolder = MoviesFolder.FAVOURITES;
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+                activity.onMovieChanged(null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -98,10 +106,8 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
-                    Intent intent = new Intent(getActivity(), DetailsActivity.class).
-                            setData(MovieContract.MovieEntry.buildMoviesUri(cursor.getLong(COL_ID)));
-                            intent.putExtra("mov_id", cursor.getString(COL_MOVIE_ID));
-                    startActivity(intent);
+                    ((Callback) getActivity())
+                            .onItemSelected(cursor.getString(COL_MOVIE_ID));
                 }
             }
         });
@@ -113,6 +119,10 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         getMovies(currentFolder);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    public interface Callback {
+        void onItemSelected(String movieId);
     }
 
     private void getMovies(MoviesFolder sortingType) {

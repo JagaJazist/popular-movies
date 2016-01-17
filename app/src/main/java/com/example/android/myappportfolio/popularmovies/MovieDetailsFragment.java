@@ -1,7 +1,6 @@
 package com.example.android.myappportfolio.popularmovies;
 
  import android.content.ContentValues;
- import android.content.Intent;
  import android.database.Cursor;
  import android.net.Uri;
  import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
  import android.widget.ImageButton;
  import android.widget.ImageView;
  import android.widget.LinearLayout;
- import android.widget.ListView;
  import android.widget.TextView;
 
  import com.example.android.myappportfolio.popularmovies.Data.MovieContract;
@@ -41,6 +39,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private static final int DETAILS_LOADER_ID = 0;
     private static final int REVIEWS_LOADER_ID = 1;
     private static final int VIDEOS_LOADER_ID = 2;
+    static final String DETAIL_MOVIE_ID = "movie_id";
 
     private Uri mCurrentUri;
     private int mIsFavourite;
@@ -101,6 +100,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     static final int COL_SIZE = 7;
     static final int COL_TYPE = 8;
 
+
     public MovieDetailsFragment() {
     }
 
@@ -112,8 +112,12 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Intent intent = getActivity().getIntent();
-        mCurrentMovieId = intent.getStringExtra("mov_id");
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mCurrentMovieId = arguments.getString(DETAIL_MOVIE_ID);
+            mCurrentUri = MovieContract.MovieEntry.buildMoviesUri(Long.parseLong(mCurrentMovieId));
+        }
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
@@ -121,6 +125,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 ContentValues cv = new ContentValues();
                 if (mIsFavourite == 0) {
                     mIsFavourite = 1;
@@ -137,6 +142,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         });
 
         if (mCurrentMovieId != null) {
+
             FetchReviews fetchReviews = new FetchReviews(getActivity());
             fetchReviews.execute(mCurrentMovieId);
 
@@ -147,58 +153,64 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         return view;
     }
 
+    void onMovieChanged(String newMovieId) {
+        if (mCurrentMovieId != null) {
+            Uri updatedUri = MovieContract.MovieEntry.buildMoviesUri(Long.parseLong(newMovieId));
+            mCurrentUri = updatedUri;
+            mCurrentMovieId = newMovieId;
+            getLoaderManager().restartLoader(DETAILS_LOADER_ID, null, this);
+            getLoaderManager().restartLoader(REVIEWS_LOADER_ID, null, this);
+            getLoaderManager().restartLoader(VIDEOS_LOADER_ID, null, this);
+        }
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        onMovieChanged(mCurrentMovieId);
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(DETAILS_LOADER_ID, null, this);
-        getLoaderManager().initLoader(REVIEWS_LOADER_ID, null, this);
-        getLoaderManager().initLoader(VIDEOS_LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-        if (intent == null || intent.getData() == null) {
-            return null;
-        }
 
-        mCurrentUri = intent.getData();
-
-        switch(id) {
-            case DETAILS_LOADER_ID:
-                return new CursorLoader(
-                        getActivity(),
-                        mCurrentUri,
-                        MOVIE_COLUMNS,
-                        null,
-                        null,
-                        null);
-            case REVIEWS_LOADER_ID:
-                Uri reviewUri = MovieContract.ReviewEntry.buildReviewsUri(
-                        Long.parseLong(intent.getStringExtra("mov_id")));
-                Log.d("OLOLO", reviewUri.toString());
-                return new CursorLoader(
-                        getActivity(),
-                        reviewUri,
-                        REVIEW_COLUMNS,
-                        null,
-                        null,
-                        null
-            );
-            case VIDEOS_LOADER_ID:
-                Uri videoUri = MovieContract.VideoEntry.buildReviewsUri(
-                        Long.parseLong(intent.getStringExtra("mov_id")));
-                Log.d("OLOLO", videoUri.toString());
-                return new CursorLoader(
-                        getActivity(),
-                        videoUri,
-                        VIDEO_COLUMNS,
-                        null,
-                        null,
-                        null
+        if(mCurrentUri != null) {
+            switch(id) {
+                case DETAILS_LOADER_ID:
+                    Uri detailsUri = MovieContract.MovieEntry.buildMoviesUri(
+                            Long.parseLong(mCurrentMovieId));
+                    return new CursorLoader(
+                            getActivity(),
+                            detailsUri,
+                            MOVIE_COLUMNS,
+                            null,
+                            null,
+                            null);
+                case REVIEWS_LOADER_ID:
+                    Uri reviewUri = MovieContract.ReviewEntry.buildReviewsUri(
+                            Long.parseLong(mCurrentMovieId));
+                    return new CursorLoader(
+                            getActivity(),
+                            reviewUri,
+                            REVIEW_COLUMNS,
+                            null,
+                            null,
+                            null
                 );
-            default: return null;
+                case VIDEOS_LOADER_ID:
+                    Uri videoUri = MovieContract.VideoEntry.buildReviewsUri(
+                            Long.parseLong(mCurrentMovieId));
+                    return new CursorLoader(
+                            getActivity(),
+                            videoUri,
+                            VIDEO_COLUMNS,
+                            null,
+                            null,
+                            null
+                    );
+                default: return null;
+            }
         }
+        return null;
     }
 
     @Override
@@ -245,7 +257,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                 break;
             case VIDEOS_LOADER_ID:
                 String videoContent = data.getString(COL_KEY);
-                Log.d("OLOLO CONTENT", videoContent);
+                Log.d("OLOLO", "Video id: " + videoContent);
                 break;
         }
     }

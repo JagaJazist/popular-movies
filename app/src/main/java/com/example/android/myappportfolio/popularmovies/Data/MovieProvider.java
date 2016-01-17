@@ -122,7 +122,7 @@ public class MovieProvider extends ContentProvider {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.MOVIE_PATH,
                         projection,
-                        MovieContract.MovieEntry._ID + " = ?",
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
                         new String[] {String.valueOf(ContentUris.parseId(uri))},
                         null,
                         null,
@@ -373,7 +373,7 @@ public class MovieProvider extends ContentProvider {
             case MOVIE_WITH_ID: {
                 numUpdated = db.update(MovieContract.MovieEntry.MOVIE_PATH,
                         contentValues,
-                        MovieContract.MovieEntry._ID + " = ?",
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
                         new String[] {String.valueOf(ContentUris.parseId(uri))});
                 break;
             }
