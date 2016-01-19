@@ -10,7 +10,7 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements MoviesGridFragment.Callback {
 
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
     private static final String CURRENT_MOVIE_ID = "current_movie_id";
     String mSelectedMovieId;
     private boolean mTwoPane;
@@ -53,13 +53,12 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
 
         if(mTwoPane) {
             if (newMovieId == null) {
-                mSelectedMovieId = newMovieId;
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-                if (fragment != null) {
+                mSelectedMovieId = null;
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG);
+                if ((fragment != null)&&(fragment.getView() != null)) {
                     fragment.getView().setVisibility(View.GONE);
                 }
             } else {
-
                 mSelectedMovieId = newMovieId;
                 final int WHAT = 1;
                 Handler handler = new Handler() {
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
                             MovieDetailsFragment fragment = new MovieDetailsFragment();
                             fragment.setArguments(args);
                             getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                                    .replace(R.id.movie_detail_container, fragment, DETAIL_FRAGMENT_TAG)
                                     .commit();
                         }
                     }
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
                 handler.sendEmptyMessage(WHAT);
             }
         }
-
     }
 
     @Override

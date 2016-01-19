@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 public class Movie implements Parcelable {
 
-    // Movie details layout contains title, release date, movie poster, vote average, and plot synopsis.
     public String movie_id;
     public String posterUrl;
     public String title;

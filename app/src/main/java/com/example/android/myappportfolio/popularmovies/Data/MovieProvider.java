@@ -16,7 +16,6 @@ public class MovieProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDBHelper mOpenHelper;
 
-    // Codes for the UriMatcher //////
     private static final int MOVIE = 100;
     private static final int MOVIE_WITH_ID = 200;
     private static final int REVIEWS_FOR_MOVIE = 300;
@@ -26,12 +25,9 @@ public class MovieProvider extends ContentProvider {
 
 
     private static UriMatcher buildUriMatcher(){
-        // Build a UriMatcher by adding a specific code to return based on a match
-        // It's common to use NO_MATCH as the code for this case.
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
-        // add a code for each type of URI you want
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH, MOVIE);
         matcher.addURI(authority, MovieContract.MovieEntry.MOVIE_PATH + "/#", MOVIE_WITH_ID);
         matcher.addURI(authority, MovieContract.ReviewEntry.REVIEW_PATH, REVIEW);
@@ -81,7 +77,6 @@ public class MovieProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
         switch(sUriMatcher.match(uri)){
-            // All Flavors selected
             case MOVIE:{
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.MOVIE_PATH,
@@ -130,7 +125,6 @@ public class MovieProvider extends ContentProvider {
                 retCursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return retCursor;}
             default:{
-                // By default, we assume a bad URI
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
         }
@@ -228,10 +222,8 @@ public class MovieProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch(match){
             case MOVIE:
-                // allows for multiple transactions
                 db.beginTransaction();
 
-                // keep track of successful inserts
                 int numInserted = 0;
                 try{
                     for(ContentValues value : values){
@@ -269,10 +261,8 @@ public class MovieProvider extends ContentProvider {
                 return numInserted;
 
             case REVIEW:
-                // allows for multiple transactions
                 db.beginTransaction();
 
-                // keep track of successful inserts
                 numInserted = 0;
                 try{
                     for(ContentValues value : values){

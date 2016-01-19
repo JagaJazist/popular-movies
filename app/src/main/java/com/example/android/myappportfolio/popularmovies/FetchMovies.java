@@ -67,7 +67,6 @@ public class FetchMovies extends AsyncTask<MoviesFolder, Void, Movie[]> {
         try {
             URL url = new URL(uri);
 
-            Log.d("OLOLO", url.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");

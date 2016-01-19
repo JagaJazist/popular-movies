@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
 
 public class MovieContract {
 
@@ -12,7 +11,6 @@ public class MovieContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    /* Inner class that defines the table contents of the weather table */
     public static final class MovieEntry implements BaseColumns {
 
         public static final String MOVIE_PATH = "movie";

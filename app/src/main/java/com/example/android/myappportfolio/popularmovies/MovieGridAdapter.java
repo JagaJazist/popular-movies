@@ -1,6 +1,5 @@
 package com.example.android.myappportfolio.popularmovies;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;

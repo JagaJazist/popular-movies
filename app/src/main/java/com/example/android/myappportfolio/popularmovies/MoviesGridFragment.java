@@ -56,7 +56,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
         setHasOptionsMenu(true);
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.settings_menu, menu);

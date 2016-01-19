@@ -56,8 +56,6 @@ public class FetchVideos extends AsyncTask<String, Void, Video[]> {
         try {
             URL url = new URL(uri);
 
-            Log.d("OLOLO", url.toString());
-
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();

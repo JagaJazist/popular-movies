@@ -123,7 +123,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         MenuItem item = menu.findItem(R.id.menu_item_share);
 
-        // Fetch and store ShareActionProvider
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
     }
 
@@ -150,7 +149,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 ContentValues cv = new ContentValues();
                 if (mIsFavourite == 0) {
                     mIsFavourite = 1;
@@ -245,7 +243,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         int id = loader.getId();
         switch(id) {
             case DETAILS_LOADER_ID:
-
                 title.setText(data.getString(COL_MOVIE_TITLE));
                 Picasso.with(getActivity()).load(data.getString(COL_MOVIE_POSTER))
                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -277,7 +274,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                     }
                 }
                 data.close();
-
                 break;
             case VIDEOS_LOADER_ID:
                 LinearLayout videos = (LinearLayout)getActivity().findViewById(R.id.videos);
@@ -294,8 +290,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(Intent.ACTION_SEND,
-                                        Uri.parse("http://www.youtube.com/watch?v=" + key));
+                                Intent intent = new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse("https://www.youtube.com/watch?v=" + key));
                                 startActivity(intent);
                             }
                         });
