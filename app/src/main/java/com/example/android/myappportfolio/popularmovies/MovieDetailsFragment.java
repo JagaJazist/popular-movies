@@ -9,10 +9,14 @@ package com.example.android.myappportfolio.popularmovies;
  import android.support.v4.app.LoaderManager;
  import android.support.v4.content.CursorLoader;
  import android.support.v4.content.Loader;
- import android.util.Log;
+ import android.support.v4.view.MenuItemCompat;
+ import android.support.v7.widget.ShareActionProvider;
  import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+ import android.view.Menu;
+ import android.view.MenuInflater;
+ import android.view.MenuItem;
+ import android.view.View;
+ import android.view.ViewGroup;
  import android.widget.ImageButton;
  import android.widget.ImageView;
  import android.widget.LinearLayout;
@@ -45,6 +49,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private Uri mCurrentUri;
     private int mIsFavourite;
     private String mCurrentMovieId;
+    private ShareActionProvider mShareActionProvider;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.MOVIE_PATH + "." + MovieContract.MovieEntry._ID,
@@ -108,7 +113,26 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.share_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+    }
+
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -249,7 +273,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         TextView content = (TextView)child.findViewById(R.id.review_content);
                         content.setText(data.getString(COL_REVIEW_CONTENT));
                         reviews.addView(child);
-
                         data.moveToNext();
                     }
                 }
@@ -271,17 +294,24 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Intent intent = new Intent(Intent.ACTION_SEND,
                                         Uri.parse("http://www.youtube.com/watch?v=" + key));
                                 startActivity(intent);
                             }
                         });
 
                         videos.addView(imageView);
-
                         data.moveToNext();
                     }
                 }
+
+                data.moveToFirst();
+                final String key = data.getString(COL_KEY);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" + key);
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this video!");
+                setShareIntent(intent);
                 data.close();
                 break;
         }
