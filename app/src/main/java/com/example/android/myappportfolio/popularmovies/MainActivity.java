@@ -51,28 +51,33 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
 
     void onMovieChanged(final String newMovieId) {
 
-        if (newMovieId == null) {
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-            fragment.getView().setVisibility(View.GONE);
-        } else {
-
-            mSelectedMovieId = newMovieId;
-            final int WHAT = 1;
-            Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == WHAT) {
-                        Bundle args = new Bundle();
-                        args.putString(MovieDetailsFragment.DETAIL_MOVIE_ID, newMovieId);
-                        MovieDetailsFragment fragment = new MovieDetailsFragment();
-                        fragment.setArguments(args);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
-                                .commit();
-                    }
+        if(mTwoPane) {
+            if (newMovieId == null) {
+                mSelectedMovieId = newMovieId;
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+                if (fragment != null) {
+                    fragment.getView().setVisibility(View.GONE);
                 }
-            };
-            handler.sendEmptyMessage(WHAT);
+            } else {
+
+                mSelectedMovieId = newMovieId;
+                final int WHAT = 1;
+                Handler handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        if (msg.what == WHAT) {
+                            Bundle args = new Bundle();
+                            args.putString(MovieDetailsFragment.DETAIL_MOVIE_ID, newMovieId);
+                            MovieDetailsFragment fragment = new MovieDetailsFragment();
+                            fragment.setArguments(args);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                                    .commit();
+                        }
+                    }
+                };
+                handler.sendEmptyMessage(WHAT);
+            }
         }
 
     }
@@ -80,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
     @Override
     protected void onResume() {
         super.onResume();
-        if (mSelectedMovieId != null) {
-            onMovieChanged(mSelectedMovieId);
-        }
+        onMovieChanged(mSelectedMovieId);
     }
 }

@@ -5,5 +5,7 @@
     <string name="content_authority">com.example.android.myappportfolio.popularmovies</string>
     <string name="favourites">Favourite movies</string>
     <string name="details_placeholder">Select a movie to see details</string>
+    <string name="videos">Videos</string>
+    <string name="reviews">Reviews</string>
 
 </resources>

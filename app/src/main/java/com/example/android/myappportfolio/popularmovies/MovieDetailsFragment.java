@@ -1,6 +1,7 @@
 package com.example.android.myappportfolio.popularmovies;
 
  import android.content.ContentValues;
+ import android.content.Intent;
  import android.database.Cursor;
  import android.net.Uri;
  import android.os.Bundle;
@@ -256,8 +257,32 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
                 break;
             case VIDEOS_LOADER_ID:
-                String videoContent = data.getString(COL_KEY);
-                Log.d("OLOLO", "Video id: " + videoContent);
+                LinearLayout videos = (LinearLayout)getActivity().findViewById(R.id.videos);
+
+                if (data.moveToFirst()){
+                    while(!data.isAfterLast()){
+                        final String key = data.getString(COL_KEY);
+                        ImageView imageView = new ImageView(getActivity());
+                        Picasso.with(getActivity())
+                                .load("http://img.youtube.com/vi/" + key + "/hqdefault.jpg")
+                                .error(R.drawable.honeycomb)
+                                .into(imageView);
+
+                        imageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse("http://www.youtube.com/watch?v=" + key));
+                                startActivity(intent);
+                            }
+                        });
+
+                        videos.addView(imageView);
+
+                        data.moveToNext();
+                    }
+                }
+                data.close();
                 break;
         }
     }

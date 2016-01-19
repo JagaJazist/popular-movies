@@ -74,12 +74,28 @@
                     style="@style/MovieDetailsText"
                     />
 
+                <TextView
+                    style="@style/MovieDetailsText"
+                    android:textStyle="bold"
+                    android:text="@string/videos"
+                    />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/videos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </LinearLayout>
+
+                <TextView
+                    style="@style/MovieDetailsText"
+                    android:textStyle="bold"
+                    android:text="@string/reviews"
+                    />
                 <LinearLayout
                     android:orientation="vertical"
                     android:id="@+id/reviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
                 </LinearLayout>
             </LinearLayout>
 

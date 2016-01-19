@@ -26,7 +26,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     private static final int CURSOR_LOADER_ID = 0;
 
     private MovieGridAdapter mMovieGridAdapter;
-    private String mSelectedMovie;
 
     MoviesFolder currentFolder = MoviesFolder.POPULAR;
 
@@ -55,8 +54,6 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        MainActivity activity = (MainActivity) getActivity();
-        mSelectedMovie = activity.mSelectedMovieId;
     }
 
 
@@ -67,24 +64,24 @@ public class MoviesGridFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        MainActivity activity = (MainActivity) getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
         switch (item.getItemId()) {
             case R.id.popular:
                 currentFolder = MoviesFolder.POPULAR;
                 getMovies(currentFolder);
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
-                activity.onMovieChanged(null);
+                mainActivity.onMovieChanged(null);
                 return true;
             case R.id.rating:
                 currentFolder = MoviesFolder.RATING;
                 getMovies(currentFolder);
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
-                activity.onMovieChanged(null);
+                mainActivity.onMovieChanged(null);
                 return true;
             case R.id.favourites:
                 currentFolder = MoviesFolder.FAVOURITES;
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
-                activity.onMovieChanged(null);
+                mainActivity.onMovieChanged(null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
